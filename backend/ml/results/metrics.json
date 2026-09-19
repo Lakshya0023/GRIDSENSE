@@ -1,0 +1,33 @@
+{
+  "dataset": "India National 20k Cascade Dataset",
+  "dataset_path": "C:\\GridSense\\new files(raj backend and bibek frontend\\dataset",
+  "model": "Multi-Head Graph Attention Network (GAT)",
+  "in_features": 14,
+  "feature_list": [
+    "f_load_pct",
+    "f_temp_c",
+    "f_voltage_pu_proxy",
+    "f_capacity_mva",
+    "f_age_years",
+    "f_demand_mw",
+    "f_gen_mw",
+    "f_degree",
+    "f_ambient_c",
+    "f_headroom_pct",
+    "f_stress_multiplier",
+    "f_load_multiplier",
+    "f_weather_factor",
+    "f_hops_from_initiator"
+  ],
+  "total_evaluated_nodes": 6872,
+  "test_scenarios_evaluated": 200,
+  "roc_auc": 0.9887,
+  "f1": 0.8392,
+  "precision": 0.8204,
+  "recall": 0.8589,
+  "accuracy": 0.9847,
+  "time_to_critical_mae": 0.1758,
+  "positive_class_ratio": 0.0464,
+  "training_epochs": 8,
+  "best_val_loss": 0.7005
+}

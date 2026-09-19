@@ -1,0 +1,773 @@
+@import "tailwindcss";
+
+@theme {
+  /* GridSense national-grid intelligence system.
+     Surfaces are neutral charcoal — a plaster/concrete material, not a hue.
+     Cyan remains the single signal accent: it means live, active or selected.
+     Green / amber / red stay because they encode grid state, not decoration. */
+  --color-gs-bg-primary: #222222;
+  --color-gs-bg-secondary: #282828;
+  --color-gs-bg-panel: #2E2E2E;
+  --color-gs-bg-elevated: #343434;
+  --color-gs-bg-overlay: #3C3C3C;
+
+  --color-gs-border: #3A3A3A;
+  --color-gs-border-light: #4A4A4A;
+  --color-gs-border-focus: #22D3EE;
+
+  --color-gs-text-primary: #F2F2F0;
+  --color-gs-text-secondary: #A8A8A6;
+  --color-gs-text-tertiary: #A8A8A6;
+  --color-gs-text-muted: #767674;
+
+  /* The former blue ramp now resolves into the cyan family, so the interface
+     carries one accent hue against the charcoal instead of two. */
+  --color-gs-blue-700: #0E7490;
+  --color-gs-blue-600: #0891B2;
+  --color-gs-blue-500: #06B6D4;
+  --color-gs-blue-400: #22D3EE;
+  --color-gs-blue-300: #67E8F9;
+  --color-gs-blue-200: #A5F3FC;
+  --color-gs-blue-100: #CFFAFE;
+  --color-gs-blue-50: #243336;
+
+  --color-gs-cyan-500: #22D3EE;
+  --color-gs-cyan-400: #22D3EE;
+  --color-gs-cyan-300: #67E8F9;
+  --color-gs-cyan-100: #1E3B41;
+
+  --color-gs-green-500: #34D399;
+  --color-gs-green-400: #34D399;
+  --color-gs-green-100: #1B4035;
+  --color-gs-amber-500: #F59E0B;
+  --color-gs-amber-400: #F59E0B;
+  --color-gs-red-600: #EF4444;
+  --color-gs-red-500: #EF4444;
+  --color-gs-red-400: #F87171;
+
+  /* Neutral grey ramp — no blue cast at any step. */
+  --color-gs-gray-50: #FAFAF9;
+  --color-gs-gray-100: #F4F3F1;
+  --color-gs-gray-200: #E5E4E1;
+  --color-gs-gray-300: #D0CFCB;
+  --color-gs-gray-400: #A8A8A6;
+  --color-gs-gray-500: #767674;
+  --color-gs-gray-600: #565654;
+  --color-gs-gray-700: #3D3D3D;
+  --color-gs-gray-800: #2E2E2E;
+  --color-gs-gray-900: #242424;
+
+  /* Legacy "navy" token names kept so existing markup keeps resolving.
+     They are charcoal now — the name is historical, the value is not. */
+  --color-gs-navy-950: #222222;
+  --color-gs-navy-900: #282828;
+  --color-gs-navy-800: #2E2E2E;
+  --color-gs-navy-700: #343434;
+  --color-gs-navy-600: #3A3A3A;
+  --color-gs-navy-500: #4A4A4A;
+
+  /* Legacy grid tokens preserved for 3D components */
+  --color-grid-bg-primary: #121212;
+  --color-grid-bg-secondary: #1A1A1A;
+  --color-grid-bg-panel: #2E2E2E;
+  --color-grid-bg-elevated: #343434;
+  --color-grid-border: #3A3A3A;
+  --color-grid-border-light: #4A4A4A;
+  --color-grid-border-focus: #22D3EE;
+  --color-grid-cyan: #22D3EE;
+  --color-grid-cyan-dim: #0891B2;
+  --color-grid-green: #34D399;
+  --color-grid-green-dim: #059669;
+  --color-grid-yellow: #F59E0B;
+  --color-grid-yellow-dim: #D97706;
+  --color-grid-red: #EF4444;
+  --color-grid-red-dim: #DC2626;
+  /* Reserved for model/inference readouts — deliberately off the cyan axis so
+     "this number came from the GNN" stays distinguishable from "this is live". */
+  --color-grid-purple: #A78BFA;
+  --color-grid-purple-dim: #8B5CF6;
+  --color-grid-text-primary: #F2F2F0;
+  --color-grid-text-secondary: #A8A8A6;
+  --color-grid-text-tertiary: #A8A8A6;
+  --color-grid-text-muted: #767674;
+
+  /* Tailwind's stock `slate` ramp is blue-tinted. A few components reach for it
+     directly (e.g. the sensor trend chart), so it is retoned to the charcoal
+     neutrals here: that way a stray slate-* utility can never smuggle the blue
+     back in, without every call site having to be rewritten. */
+  --color-slate-50: #FAFAF9;
+  --color-slate-100: #F4F3F1;
+  --color-slate-200: #E5E4E1;
+  --color-slate-300: #D0CFCB;
+  --color-slate-400: #A8A8A6;
+  --color-slate-500: #767674;
+  --color-slate-600: #565654;
+  --color-slate-700: #3A3A3A;
+  --color-slate-800: #2E2E2E;
+  --color-slate-900: #282828;
+  --color-slate-950: #222222;
+
+  --font-sans: "Segoe UI Variable", "Segoe UI", sans-serif;
+  --font-mono: "Cascadia Mono", Consolas, monospace;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Plaster texture
+   Two baked SVG noise tiles — a coarse cloud for the blotching and a fine
+   grain for the tooth — plus a few soft light/dark patches. It is composed
+   into a single background-image stack rather than an overlay element, so it
+   drops straight onto the rules that already paint a page background: no new
+   DOM node, no new stacking context, nothing that can reorder existing
+   content or intercept a click.
+   Both tiles are desaturated with feColorMatrix so the texture stays neutral
+   and never reintroduces a colour cast.
+   ────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Fine tooth. Kept procedural and drawn at its native 180px tile, where a
+     stitch seam is sub-pixel. It is composited with `overlay`, which is the
+     identity at mid-grey: the grain therefore varies the surface in BOTH
+     directions, instead of only washing it lighter the way a plainly
+     translucent noise layer does over a dark base.
+     The colour matrix folds the red channel into RGB and forces alpha to 1, so
+     the tile is opaque neutral grey and the blend stays predictable. */
+  --gs-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  --gs-grain-soft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.46' intercept='0.27'/%3E%3CfeFuncG type='linear' slope='0.46' intercept='0.27'/%3E%3CfeFuncB type='linear' slope='0.46' intercept='0.27'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+
+  /* Coarse blotching, baked as a seamless 512px tile: 1/f noise synthesised in
+     the Fourier domain, which is circular, so the tile wraps exactly — no
+     stitching, no visible repeat edge. Matched to the reference plaster's own
+     statistics, scaled to sit at mean 34 so panels still read as elevated above
+     it. Regenerate with scripts/generate-plaster-texture.py. */
+  --gs-plaster: url("/textures/plaster.webp");
+
+  --gs-texture: var(--gs-grain), var(--gs-plaster);
+  --gs-texture-size: 180px 180px, 560px 560px;
+  --gs-texture-repeat: repeat, repeat;
+  --gs-texture-blend: overlay, normal;
+
+  /* Tool surfaces: the same wall, damped and darkened, so that live data stays
+     the loudest thing on the screen. */
+  --gs-texture-soft: linear-gradient(rgba(0, 0, 0, .34), rgba(0, 0, 0, .34)), var(--gs-grain-soft), var(--gs-plaster);
+  --gs-texture-soft-size: 100% 100%, 180px 180px, 560px 560px;
+  --gs-texture-soft-repeat: no-repeat, repeat, repeat;
+  --gs-texture-soft-blend: normal, overlay, normal;
+
+  /* Panels get tooth only — blotching inside a 300px card reads as a stain. */
+  --gs-texture-panel: var(--gs-grain-soft);
+  --gs-texture-panel-size: 180px 180px;
+  --gs-texture-panel-blend: overlay;
+
+  /* Neutral hairline survey grid, formerly a blue-tinted one. */
+  --gs-rule: rgba(255, 255, 255, .03);
+  --gs-rule-soft: rgba(255, 255, 255, .022);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  background-color: #222222;
+  color: #F2F2F0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-image: var(--gs-texture);
+  background-size: var(--gs-texture-size);
+  background-repeat: var(--gs-texture-repeat);
+  background-blend-mode: var(--gs-texture-blend);
+}
+
+body.dark-mode {
+  background-color: #222222;
+  color: #F2F2F0;
+}
+
+h1, h2, h3, .gs-display {
+  font-family: Bahnschrift, "Arial Narrow", "Roboto Condensed", sans-serif;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+}
+
+/* GridSense operating-system chrome. The cyan is an active signal, not decoration. */
+.gs-nav { border-bottom: 1px solid rgba(168, 168, 166, .1); background: linear-gradient(180deg, rgba(18, 18, 18, .9), rgba(18, 18, 18, .46)); backdrop-filter: blur(12px); }
+.gs-nav-scrolled { border-color: rgba(168, 168, 166, .16); background: rgba(18, 18, 18, .92); box-shadow: 0 12px 34px rgba(0, 0, 0, .45); backdrop-filter: blur(22px) saturate(130%); }
+.gs-nav-trigger, .gs-nav-link { display: inline-flex; height: 100%; align-items: center; gap: .35rem; padding: 0 .65rem; color: #A8A8A6; font-size: .78rem; font-weight: 650; transition: color .2s ease; }
+.gs-nav-trigger:hover, .gs-nav-link:hover, .gs-nav-trigger-active, .gs-nav-link-active { color: #F2F2F0; }
+.gs-nav-trigger-active { position: relative; }
+.gs-nav-trigger-active::after { position: absolute; right: .65rem; bottom: 16px; left: .65rem; height: 1px; background: #22D3EE; box-shadow: 0 0 12px rgba(34, 211, 238, .72); content: ""; }
+.gs-mega-menu { position: absolute; top: 62px; left: -.75rem; width: 292px; border: 1px solid rgba(168, 168, 166, .18); border-radius: 14px; background-color: rgba(46, 46, 46, .97); background-image: var(--gs-texture-panel); background-size: var(--gs-texture-panel-size); background-blend-mode: var(--gs-texture-panel-blend); padding: .65rem; box-shadow: 0 24px 60px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .05); backdrop-filter: blur(24px) saturate(130%); }
+.gs-mega-kicker { display: block; padding: .45rem .6rem .5rem; color: #67E8F9; font-family: var(--font-mono); font-size: .6rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.gs-mega-item { display: flex; gap: .75rem; align-items: center; border: 1px solid transparent; border-radius: 9px; padding: .7rem .6rem; transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+.gs-mega-item:hover, .gs-mega-item-active { border-color: rgba(34, 211, 238, .2); background: linear-gradient(90deg, rgba(34, 211, 238, .1), rgba(255, 255, 255, .03)); transform: translateX(2px); }
+.gs-mega-icon { display: grid; height: 2rem; width: 2rem; flex: 0 0 auto; place-items: center; border: 1px solid rgba(34, 211, 238, .2); border-radius: 8px; background: #343434; color: #22D3EE; }
+.gs-nav-icon, .gs-nav-login { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; border: 1px solid #3A3A3A; border-radius: 7px; color: #F2F2F0; font-size: .72rem; font-weight: 650; transition: border-color .2s ease, background .2s ease; }
+.gs-nav-icon { width: 34px; color: #67E8F9; }
+.gs-nav-login { padding: 0 .7rem; }
+.gs-nav-icon:hover, .gs-nav-login:hover { border-color: rgba(34, 211, 238, .65); background: rgba(34, 211, 238, .07); }
+.gs-nav-cta { display: inline-flex; min-height: 34px; align-items: center; gap: .45rem; border-radius: 7px; background: linear-gradient(135deg, #22D3EE, #0891B2); padding: 0 .8rem; color: #121212; font-size: .72rem; font-weight: 800; box-shadow: 0 9px 20px rgba(34, 211, 238, .16); transition: filter .2s ease, transform .2s ease; }
+.gs-nav-cta:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.gs-live-dot { display: inline-block; height: 6px; width: 6px; border-radius: 99px; background: #34D399; box-shadow: 0 0 0 3px rgba(52, 211, 153, .12), 0 0 12px rgba(52, 211, 153, .65); animation: gsPulse 2s ease-in-out infinite; }
+.gs-mobile-menu { border-top: 1px solid rgba(168, 168, 166, .14); background-color: rgba(40, 40, 40, .98); background-image: var(--gs-texture-panel); background-size: var(--gs-texture-panel-size); background-blend-mode: var(--gs-texture-panel-blend); box-shadow: 0 20px 40px rgba(0, 0, 0, .5); backdrop-filter: blur(24px); }
+@keyframes gsPulse { 50% { opacity: .45; box-shadow: 0 0 0 5px rgba(52, 211, 153, 0), 0 0 16px rgba(52, 211, 153, .4); } }
+
+.gs-analytics-panel { border: 1px solid #3A3A3A; border-radius: 12px; background-color: rgba(46, 46, 46, .9); background-image: var(--gs-texture-panel); background-size: var(--gs-texture-panel-size); background-blend-mode: var(--gs-texture-panel-blend); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03), 0 20px 50px rgba(0, 0, 0, .3); }
+/* Like the lead section, this paints no copy of the wall. It only adds its own
+   cyan signal glow over the shared plaster, so the texture does not restart at
+   the section boundary and the page reads as one continuous surface. */
+.gs-impact-section { position: relative; overflow: hidden; background-color: transparent; background-image: radial-gradient(circle at 84% 24%, rgba(34, 211, 238, .08), transparent 26%); background-size: 100% 100%; background-repeat: no-repeat; }
+.gs-impact-section::before { position: absolute; inset: 0; opacity: .34; background-image: linear-gradient(115deg, transparent 0 47%, rgba(255, 255, 255, .05) 47.1% 47.3%, transparent 47.4% 100%), linear-gradient(60deg, transparent 0 59%, rgba(34, 211, 238, .06) 59.1% 59.25%, transparent 59.3%); background-size: 300px 210px; content: ""; pointer-events: none; }
+.gs-impact-section > * { position: relative; z-index: 1; }
+.gs-impact-widget { position: relative; min-height: 192px; transition: background .35s ease, transform .35s cubic-bezier(.16, 1, .3, 1); }
+.gs-impact-widget::after { position: absolute; right: 0; bottom: 0; left: 0; height: 2px; background: linear-gradient(90deg, transparent, #22D3EE, transparent); content: ""; opacity: 0; transform: scaleX(.3); transition: opacity .35s ease, transform .35s ease; }
+.gs-impact-widget:hover { background: #3A3A3A; transform: translateY(-3px); }.gs-impact-widget:hover::after { opacity: .9; transform: scaleX(1); }
+.gs-data-label { color: #A8A8A6; font-family: var(--font-mono); font-size: .62rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+.gs-risk-badge { min-width: 60px; border: 1px solid; border-radius: 999px; padding: .26rem .5rem; text-align: center; font-family: var(--font-mono); font-size: .6rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.gs-risk-cyan { border-color: rgba(34, 211, 238, .28); background: rgba(34, 211, 238, .08); color: #67E8F9; }
+/* Kept as a distinct badge tier, now carried by value rather than a second hue. */
+.gs-risk-blue { border-color: rgba(168, 168, 166, .3); background: rgba(255, 255, 255, .06); color: #D0CFCB; }
+.gs-risk-amber { border-color: rgba(245, 158, 11, .32); background: rgba(245, 158, 11, .1); color: #FBBF24; }
+.gs-radar { position: relative; display: grid; width: 188px; height: 188px; margin-right: auto; margin-left: auto; place-items: center; border: 1px solid rgba(34, 211, 238, .22); border-radius: 50%; background: radial-gradient(circle, rgba(34, 211, 238, .15) 0 1px, transparent 1px), repeating-radial-gradient(circle, transparent 0 30px, rgba(34, 211, 238, .13) 31px 32px), conic-gradient(from 45deg, rgba(34, 211, 238, .2), transparent 22%, transparent 61%, rgba(255, 255, 255, .1)); }
+.gs-radar::before, .gs-radar::after { position: absolute; background: rgba(255, 255, 255, .12); content: ""; }
+.gs-radar::before { width: 1px; height: 100%; }.gs-radar::after { width: 100%; height: 1px; }
+.gs-radar-core { position: relative; z-index: 1; display: grid; width: 66px; height: 66px; place-items: center; border: 1px solid rgba(34, 211, 238, .45); border-radius: 50%; background: #282828; box-shadow: 0 0 32px rgba(34, 211, 238, .22); color: #F2F2F0; font-family: var(--font-mono); font-size: 1.6rem; font-weight: 800; }.gs-radar-core small { margin-left: 2px; color: #22D3EE; font-size: .7rem; }
+.gs-radar i, .gs-radar b, .gs-radar em { position: absolute; display: block; width: 7px; height: 7px; border-radius: 50%; background: #22D3EE; box-shadow: 0 0 10px #22D3EE; }.gs-radar i { top: 31px; right: 43px; }.gs-radar b { bottom: 47px; left: 27px; background: #F59E0B; box-shadow: 0 0 10px #F59E0B; }.gs-radar em { top: 89px; left: 19px; width: 4px; height: 4px; background: #A8A8A6; box-shadow: 0 0 10px rgba(168, 168, 166, .8); }
+
+/* Shared plaster surface gives simple routes the same control-room material as
+   the twin: charcoal wall, hairline survey grid, full-strength texture. */
+main:not(.gs-workspace) {
+  background-color: #222222;
+  background-image:
+    linear-gradient(var(--gs-rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gs-rule) 1px, transparent 1px),
+    var(--gs-texture);
+  background-size: 64px 64px, 64px 64px, var(--gs-texture-size);
+  background-repeat: repeat, repeat, var(--gs-texture-repeat);
+  background-blend-mode: normal, normal, var(--gs-texture-blend);
+}
+/* The lead section does NOT paint its own copy of the wall. It stays
+   transparent and lets <main>'s texture show through, so the plaster runs
+   unbroken across the section boundary instead of restarting there; the
+   section reads as distinct through a light wash, not a different surface. */
+main:not(.gs-workspace) > section:first-child { position: relative; overflow: hidden; background-color: transparent !important; background-image: linear-gradient(120deg, rgba(255, 255, 255, .055), transparent 62%) !important; background-size: 100% 100% !important; background-repeat: no-repeat !important; border-color: #3A3A3A !important; }
+main:not(.gs-workspace) > section:first-child::after { position: absolute; top: -95%; right: 8%; width: 500px; height: 500px; border: 1px solid rgba(34, 211, 238, .13); border-radius: 50%; box-shadow: 0 0 0 72px rgba(34, 211, 238, .022), 0 0 80px rgba(34, 211, 238, .08); content: ""; pointer-events: none; }
+main:not(.gs-workspace) > section:first-child:not(.gs-landing) > * { position: relative; z-index: 1; }
+
+html[data-theme="dark"] main:not(.gs-workspace) .bg-white { background-color: #2E2E2E !important; }
+html[data-theme="dark"] main:not(.gs-workspace) .bg-gs-gray-50 { background-color: #282828 !important; }
+html[data-theme="dark"] main:not(.gs-workspace) .text-gs-gray-900 { color: #F2F2F0 !important; }
+html[data-theme="dark"] main:not(.gs-workspace) .text-gs-gray-700, html[data-theme="dark"] main:not(.gs-workspace) .text-gs-gray-600, html[data-theme="dark"] main:not(.gs-workspace) .text-gs-gray-500 { color: #A8A8A6 !important; }
+html[data-theme="dark"] main:not(.gs-workspace) .border-gs-gray-100, html[data-theme="dark"] main:not(.gs-workspace) .border-gs-gray-200, html[data-theme="dark"] main:not(.gs-workspace) .border-gs-gray-300 { border-color: #3A3A3A !important; }
+html[data-theme="dark"] main:not(.gs-workspace) .bg-gs-blue-50, html[data-theme="dark"] main:not(.gs-workspace) .bg-red-50, html[data-theme="dark"] main:not(.gs-workspace) .bg-amber-50, html[data-theme="dark"] main:not(.gs-workspace) .bg-green-50 { background-color: rgba(46, 46, 46, .85) !important; }
+html[data-theme="light"] .gs-nav { background: rgba(240, 238, 234, .92); border-color: rgba(28, 28, 26, .1); }
+html[data-theme="light"] .gs-nav-trigger, html[data-theme="light"] .gs-nav-link { color: #565654; }
+html[data-theme="light"] .gs-nav-trigger:hover, html[data-theme="light"] .gs-nav-link:hover, html[data-theme="light"] .gs-nav-trigger-active, html[data-theme="light"] .gs-nav-link-active { color: #1C1C1A; }
+html[data-theme="light"] .gs-mega-menu, html[data-theme="light"] .gs-mobile-menu { background-color: rgba(247, 245, 242, .98); background-image: none; border-color: #D0CFCB; }
+html[data-theme="light"] .gs-nav-login, html[data-theme="light"] .gs-nav-icon { color: #1C1C1A; border-color: #D0CFCB; }
+
+html[data-theme="light"] body {
+  background-color: #EDEBE8;
+  color: #1C1C1A;
+}
+
+html[data-theme="light"] .gs-hero {
+  background: linear-gradient(135deg, #f1efec 0%, #f8f6f3 48%, #e8e5e1 100%);
+}
+
+html[data-theme="light"] .gs-hero video { opacity: 0.12; }
+html[data-theme="light"] .gs-hero h1 { color: #1c1c1a; }
+
+/* The landing scene is an interactive digital-twin canvas. Video remains an
+   optional supporting asset in public/, not the primary hero identity.
+   Footage is desaturated toward the charcoal so it reads as material light
+   rather than reintroducing a blue cast over the wall. */
+.gs-twin-hero { background: #1C1C1C; }
+.gs-twin-atmosphere {
+  z-index: 1;
+  opacity: .18;
+  mix-blend-mode: screen;
+  filter: grayscale(.9) contrast(1.08) brightness(.72);
+}
+.gs-twin-scrim {
+  z-index: 2;
+  background:
+    linear-gradient(90deg, rgba(14, 14, 14, 0.96) 0%, rgba(14, 14, 14, 0.76) 36%, rgba(14, 14, 14, 0.18) 70%, rgba(14, 14, 14, 0.42) 100%),
+    linear-gradient(0deg, rgba(14, 14, 14, 0.72) 0%, transparent 35%);
+}
+.gs-twin-grain {
+  z-index: 3;
+  opacity: .16;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(90deg, #000, transparent 72%);
+}
+
+/* Home is media-led: this is the supplied GridSense globe film, given motion
+   depth through a slowly travelling crop and restrained control-room overlays. */
+.gs-film-hero { background: #1C1C1C; }
+.gs-film-video {
+  animation: gridFilmDrift 22s cubic-bezier(.33, 1, .68, 1) infinite alternate;
+  filter: grayscale(.86) contrast(1.1) brightness(.76);
+  transform: scale(1.04);
+}
+.gs-film-vignette {
+  background:
+    radial-gradient(circle at 70% 44%, transparent 0%, rgba(12, 12, 12, .12) 27%, rgba(12, 12, 12, .78) 92%),
+    linear-gradient(90deg, rgba(12, 12, 12, .84) 0%, rgba(12, 12, 12, .38) 44%, rgba(12, 12, 12, .14) 100%),
+    linear-gradient(0deg, rgba(12, 12, 12, .76), transparent 44%);
+}
+.gs-film-scanlines {
+  opacity: .12;
+  background-image: repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(216, 216, 214, .12) 4px);
+  mix-blend-mode: screen;
+}
+.gs-film-title { animation-duration: .95s; }
+
+/* Homepage: a video-led, web-native fluid landing treatment. */
+.gs-landing-video {
+  width: calc(100% + 44px);
+  height: calc(100% + 44px);
+  left: -22px;
+  top: -22px;
+  filter: grayscale(.88) contrast(1.16) brightness(.72);
+  transform: scale(1.19);
+  will-change: transform;
+}
+.gs-landing-scrim {
+  background:
+    radial-gradient(ellipse 65% 75% at 72% 44%, transparent 0%, rgba(12, 12, 12, .24) 48%, rgba(12, 12, 12, .8) 100%),
+    linear-gradient(90deg, rgba(12, 12, 12, .86) 0%, rgba(12, 12, 12, .38) 48%, rgba(12, 12, 12, .14) 100%),
+    linear-gradient(0deg, rgba(12, 12, 12, .76) 0%, transparent 45%);
+}
+.gs-landing-grain {
+  opacity: .3;
+  background-image: var(--gs-grain);
+  background-size: 180px 180px;
+  mix-blend-mode: soft-light;
+}
+.gs-orbit-hero { background-color: #1C1C1C; background-image: var(--gs-texture); background-size: var(--gs-texture-size); background-repeat: var(--gs-texture-repeat); background-blend-mode: var(--gs-texture-blend); }
+.gs-orbit-lines { z-index: 1; opacity: .3; transform-origin: 50% 19%; animation: gsOrbitDrift 28s linear infinite; background: radial-gradient(ellipse 37% 18% at 50% 18%, transparent 58%, rgba(255, 255, 255, .18) 59%, transparent 60%), radial-gradient(ellipse 51% 29% at 50% 19%, transparent 66%, rgba(34, 211, 238, .1) 67%, transparent 68%); }
+.gs-galaxy-video { z-index: 0; opacity: .14; filter: grayscale(.96) contrast(1.12); transform: scale(1.05); }
+.gs-landing-video { z-index: 1; opacity: .84; }
+.gs-lightning-video { z-index: 2; opacity: .26; filter: grayscale(.92); mix-blend-mode: screen; object-position: 78% 18%; pointer-events: none; mask-image: radial-gradient(ellipse at 76% 12%, #000 8%, rgba(0, 0, 0, .8) 35%, transparent 72%); -webkit-mask-image: radial-gradient(ellipse at 76% 12%, #000 8%, rgba(0, 0, 0, .8) 35%, transparent 72%); }
+html[data-theme="light"] .gs-galaxy-video { opacity: .08; }
+html[data-theme="light"] .gs-lightning-video { opacity: .07; }
+@media (prefers-reduced-motion: reduce) { .gs-galaxy-video, .gs-lightning-video { display: none; } }
+@keyframes gsOrbitDrift { to { transform: rotate(360deg); } }
+
+/* Tool surface: same wall, half the texture, so live data stays the loudest
+   thing on screen. */
+.gs-workspace {
+  background-color: #1A1A1A;
+  background-image:
+    radial-gradient(ellipse 72% 54% at 50% 56%, rgba(34, 211, 238, .05), transparent 64%),
+    linear-gradient(var(--gs-rule-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gs-rule-soft) 1px, transparent 1px),
+    var(--gs-texture-soft);
+  background-size: 100% 100%, 42px 42px, 42px 42px, var(--gs-texture-soft-size);
+  background-repeat: no-repeat, repeat, repeat, var(--gs-texture-soft-repeat);
+  background-blend-mode: normal, normal, normal, var(--gs-texture-soft-blend);
+}
+.gs-globe-brand { text-shadow: 0 8px 34px rgba(10, 10, 10, .85); }
+.gs-globe-brand-kicker { display: block; color: #67E8F9; font-family: var(--font-mono); font-size: .58rem; font-weight: 800; letter-spacing: .26em; text-transform: uppercase; }
+.gs-globe-brand-title { display: block; margin-top: .3rem; color: #f4f4f2; font-family: Bahnschrift, "Arial Narrow", sans-serif; font-size: clamp(2.4rem, 5.4vw, 5.2rem); font-weight: 800; letter-spacing: -.085em; line-height: .82; }
+.gs-globe-brand-rule { display: block; width: 56%; height: 1px; margin: .9rem auto 0; background: linear-gradient(90deg, transparent, #22D3EE, transparent); box-shadow: 0 0 16px rgba(34, 211, 238, .62); }
+@media (prefers-reduced-motion: reduce) { .gs-orbit-lines { animation: none; } }
+.gs-hero-instrument { border: 1px solid rgba(255, 255, 255, .12); border-radius: 14px; padding: 1rem; background-color: rgba(52, 52, 52, .62); background-image: linear-gradient(145deg, rgba(72, 72, 72, .55), rgba(34, 34, 34, .45)), var(--gs-texture-panel); background-size: 100% 100%, var(--gs-texture-panel-size); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 22px 55px rgba(0, 0, 0, .4); backdrop-filter: blur(14px) saturate(120%); }
+.gs-widget-status { border: 1px solid rgba(52, 211, 153, .28); border-radius: 999px; padding: .18rem .4rem; color: #6ee7b7; font-family: var(--font-mono); font-size: .56rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.gs-signal-matrix { box-shadow: 0 22px 58px rgba(0, 0, 0, .35); }
+.gs-landing-nav,
+.gs-landing-mobile-nav {
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 14px;
+  background-color: rgba(34, 34, 34, .46);
+  background-image: var(--gs-texture-panel);
+  background-size: var(--gs-texture-panel-size);
+  background-blend-mode: var(--gs-texture-panel-blend);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .09), 0 16px 45px rgba(0, 0, 0, .4);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+.gs-landing-mobile-nav a {
+  border-radius: 9px;
+  padding: .7rem .75rem;
+  color: rgba(255, 255, 255, .78);
+  font-size: .875rem;
+}
+.gs-landing-mobile-nav a:hover { background: rgba(255, 255, 255, .1); color: white; }
+.gs-landing-primary {
+  background: linear-gradient(135deg, #22D3EE, #0891B2);
+  color: #101010;
+  box-shadow: 0 10px 30px rgba(34, 211, 238, .18);
+}
+.gs-landing-primary:hover { filter: brightness(1.08); }
+.gs-landing-secondary { border-color: #4A4A4A; background: rgba(46, 46, 46, .72); color: #F2F2F0; }
+.gs-landing-secondary:hover { border-color: #22D3EE; background: rgba(34, 211, 238, .08); }
+
+html[data-theme="light"] .gs-landing { color: #1c1c1a; }
+html[data-theme="light"] .gs-landing-scrim {
+  background:
+    linear-gradient(90deg, rgba(248, 246, 243, .88) 0%, rgba(248, 246, 243, .5) 48%, rgba(248, 246, 243, .12) 100%),
+    linear-gradient(0deg, rgba(248, 246, 243, .84) 0%, transparent 48%);
+}
+html[data-theme="light"] .gs-landing-title { color: #1c1c1a; }
+html[data-theme="light"] .gs-landing p:not(.font-mono) { color: rgba(28, 28, 26, .76); }
+html[data-theme="light"] .gs-landing-secondary { border-color: rgba(28, 28, 26, .28); background: rgba(255, 255, 255, .56); color: #1c1c1a; }
+html[data-theme="light"] .gs-landing-secondary:hover { background: rgba(255, 255, 255, .82); }
+
+@media (pointer: fine) {
+  .gs-fluid-cursor-active,
+  .gs-fluid-cursor-active a,
+  .gs-fluid-cursor-active button,
+  .gs-fluid-cursor-active input,
+  .gs-fluid-cursor-active textarea,
+  .gs-fluid-cursor-active select { cursor: none; }
+}
+.gs-fluid-cursor {
+  position: fixed;
+  z-index: 100;
+  top: -32px;
+  left: -32px;
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  border: 1px solid rgba(34, 211, 238, .8);
+  border-radius: 50%;
+  background: rgba(30, 30, 30, .86);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 8px 28px rgba(0, 0, 0, .35);
+  color: #22D3EE;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -.08em;
+  pointer-events: none;
+  mix-blend-mode: normal;
+  will-change: transform;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .gs-landing-nav, .gs-landing-mobile-nav { background-color: rgba(34, 34, 34, .95); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+@keyframes gridFilmDrift {
+  from { transform: scale(1.04) translate3d(-.5%, .4%, 0); }
+  to { transform: scale(1.12) translate3d(1.25%, -1%, 0); }
+}
+
+html[data-theme="light"] .gs-twin-hero { background: #23211e; }
+html[data-theme="light"] .gs-twin-scrim {
+  background: linear-gradient(90deg, rgba(35, 33, 30, .92), rgba(35, 33, 30, .54) 48%, rgba(35, 33, 30, .16));
+}
+
+/* Apply the saved theme consistently to the content pages, cards, tables and footer. */
+html[data-theme="dark"] body:not(.dark-mode) { background-color: #222222; color: #f2f2f0; }
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .bg-gs-gray-50,
+html[data-theme="dark"] .bg-gs-gray-100 { background-color: #2E2E2E !important; }
+html[data-theme="dark"] .border-gs-gray-100,
+html[data-theme="dark"] .border-gs-gray-200,
+html[data-theme="dark"] .border-gs-gray-300 { border-color: #3a3a3a !important; }
+html[data-theme="dark"] .text-gs-gray-900 { color: #f2f2f0 !important; }
+html[data-theme="dark"] .text-gs-gray-700,
+html[data-theme="dark"] .text-gs-gray-600 { color: #a8a8a6 !important; }
+html[data-theme="dark"] .text-gs-gray-500 { color: #a8a8a6 !important; }
+html[data-theme="dark"] .bg-gs-blue-50 { background-color: #243336 !important; }
+
+/* Form fields carry no surface class in markup, so they would otherwise keep
+   the browser's white default and punch a hole in the charcoal. Checkboxes,
+   radios and range inputs are excluded — they are drawn by the platform. */
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background-color: #262626;
+  color: #F2F2F0;
+  border-color: #3A3A3A;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder { color: #767674; }
+
+html[data-theme="light"] body.dark-mode { background-color: #edebe8; color: #1c1c1a; }
+html[data-theme="light"] .bg-gs-bg-primary { background-color: #edebe8 !important; }
+html[data-theme="light"] .bg-gs-bg-secondary,
+html[data-theme="light"] .bg-gs-bg-panel,
+html[data-theme="light"] .bg-gs-bg-elevated { background-color: #f9f8f6 !important; }
+html[data-theme="light"] .text-gs-text-primary { color: #1c1c1a !important; }
+html[data-theme="light"] .text-gs-text-secondary,
+html[data-theme="light"] .text-gs-text-tertiary { color: #565654 !important; }
+html[data-theme="light"] .text-gs-text-muted { color: #767674 !important; }
+html[data-theme="light"] .border-gs-border { border-color: #d8d5d0 !important; }
+
+/* Workspace controls deliberately consume the same token family as every
+   other menu. This also covers the 3D dashboard's legacy dark-mode class. */
+html[data-theme="light"] .bg-gs-navy-950 { background-color: #edebe8 !important; }
+html[data-theme="light"] .bg-gs-navy-900,
+html[data-theme="light"] .bg-gs-navy-800 { background-color: #f9f8f6 !important; }
+html[data-theme="light"] body.dark-mode .bg-gs-bg-primary,
+html[data-theme="light"] body.dark-mode .bg-gs-bg-secondary,
+html[data-theme="light"] body.dark-mode .bg-gs-bg-panel,
+html[data-theme="light"] body.dark-mode .bg-gs-bg-elevated { background-color: #f9f8f6 !important; }
+html[data-theme="light"] body.dark-mode .text-white { color: #1c1c1a !important; }
+
+/* The light theme is the same plaster material read at the other end of the
+   value scale — warm paper grey, not blue-white. Blotching is dropped here
+   because on a light surface it reads as a stain rather than as depth. */
+html[data-theme="light"] body,
+html[data-theme="light"] main:not(.gs-workspace),
+html[data-theme="light"] .gs-workspace {
+  --gs-rule: rgba(28, 28, 26, .045);
+  --gs-rule-soft: rgba(28, 28, 26, .035);
+  background-color: #edebe8;
+  background-image: var(--gs-grain-soft);
+  background-size: 180px 180px;
+  background-repeat: repeat;
+  background-blend-mode: overlay;
+}
+/* The lead section carries `text-white` in markup, so it stays a dark plate in
+   BOTH themes: on the light paper surface it reads as a charcoal band, not as a
+   light surface with unreadable white type on it. */
+html[data-theme="light"] main:not(.gs-workspace) > section:first-child { background-color: #2A2A2A !important; background-image: var(--gs-texture) !important; background-size: var(--gs-texture-size) !important; background-repeat: var(--gs-texture-repeat) !important; background-blend-mode: var(--gs-texture-blend) !important; border-color: #3A3A3A !important; }
+
+.gs-workspace {
+  background-color: var(--gs-workspace-bg, #1A1A1A);
+  color: var(--gs-workspace-text, #f2f2f0);
+}
+html[data-theme="light"] .gs-workspace {
+  --gs-workspace-bg: #edebe8;
+  --gs-workspace-text: #1c1c1a;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background-color: #242424; }
+::-webkit-scrollbar-thumb { background-color: #4A4A4A; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background-color: #666664; }
+
+html[data-theme="light"] ::-webkit-scrollbar-track { background-color: #E5E4E1; }
+html[data-theme="light"] ::-webkit-scrollbar-thumb { background-color: #C4C1BD; }
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background-color: #A8A8A6; }
+
+body.dark-mode::-webkit-scrollbar-track { background-color: #242424; }
+body.dark-mode::-webkit-scrollbar-thumb { background-color: #4A4A4A; }
+body.dark-mode::-webkit-scrollbar-thumb:hover { background-color: #666664; }
+
+/* Preserved legacy classes for 3D components */
+.panel {
+  background-color: #2E2E2E;
+  background-image: var(--gs-texture-panel);
+  background-size: var(--gs-texture-panel-size);
+  background-blend-mode: var(--gs-texture-panel-blend);
+  border: 1px solid #3A3A3A;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+.label {
+  font-size: 0.625rem;
+  line-height: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #A8A8A6;
+}
+.status-dot { width: 0.375rem; height: 0.375rem; border-radius: 9999px; }
+.glow-border-cyan { box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.3), 0 0 15px rgba(34, 211, 238, 0.1); }
+.glow-border-red { box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.4), 0 0 15px rgba(239, 68, 68, 0.15); }
+.shadow-panel { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5); }
+
+/* Institutional utilities */
+.text-institutional { letter-spacing: -0.01em; }
+.container-official {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* ── Refined Animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes titleReveal {
+  0% { opacity: 0; transform: translateY(20px); letter-spacing: 0.3em; }
+  60% { opacity: 1; letter-spacing: 0.06em; }
+  100% { opacity: 1; transform: translateY(0); letter-spacing: 0.02em; }
+}
+@keyframes subtleGlow {
+  0%, 100% { text-shadow: 0 0 20px rgba(34, 211, 238, 0.15); }
+  50% { text-shadow: 0 0 30px rgba(34, 211, 238, 0.3); }
+}
+@keyframes videoFadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+.animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
+.animate-title-reveal { animation: titleReveal 1.4s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
+.animate-subtle-glow { animation: subtleGlow 4s ease-in-out infinite; }
+.animate-video-fade-out { animation: videoFadeOut 1.2s cubic-bezier(0.7, 0, 0.3, 1) forwards; }
+.animate-pulse-dot { animation: pulseDot 2s ease-in-out infinite; }
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .gs-film-video { animation: none; transform: none; }
+  .gs-landing-video { transform: none !important; }
+  .gs-fluid-cursor { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOTION SYSTEM
+   Timing and easing here mirror src/components/motion/tokens.ts. If one side
+   changes, change the other — the route veil and the CSS chrome are supposed
+   to move with the same rhythm.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Route veil ───────────────────────────────────────────────────────────
+   Panels of the page's own plaster sweep up over the outgoing route. Using the
+   real texture rather than a flat fill is what makes it read as the interface
+   folding over itself instead of a loading screen dropped on top. */
+.gs-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  /* The veil must never swallow a click. If a navigation stalls behind it, the
+     user can still reach the page underneath. */
+  pointer-events: none;
+}
+/* The panels overlap by a pixel. Flex rounding leaves sub-pixel gaps between
+   them otherwise, and the outgoing page shows through as bright hairlines. */
+.gs-veil-panels { position: absolute; inset: 0; display: flex; }
+.gs-veil-panel + .gs-veil-panel { margin-left: -1px; }
+.gs-veil-panel {
+  position: relative;
+  flex: 1 1 0;
+  background-color: #1C1C1C;
+  background-image: var(--gs-texture);
+  background-size: var(--gs-texture-size);
+  background-repeat: var(--gs-texture-repeat);
+  background-blend-mode: var(--gs-texture-blend);
+  will-change: transform;
+}
+/* A cyan leading edge, so the panel reads as a surface being drawn across the
+   screen rather than a rectangle appearing. */
+.gs-veil-panel::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #22D3EE, transparent);
+  box-shadow: 0 0 20px rgba(34, 211, 238, .6);
+}
+.gs-veil-caption {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: .85rem;
+}
+.gs-veil-mark { height: 42px; width: 42px; border-radius: 12px; box-shadow: 0 0 34px rgba(34, 211, 238, .3); }
+.gs-veil-label {
+  color: #F2F2F0;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+}
+.gs-veil-bar { display: block; height: 1px; width: 132px; overflow: hidden; background: rgba(255, 255, 255, .16); }
+.gs-veil-bar i { display: block; height: 100%; width: 46%; background: #22D3EE; box-shadow: 0 0 12px rgba(34, 211, 238, .8); }
+
+/* ── Scroll position readout ──────────────────────────────────────────────
+   Sits below the veil (z 200) so a route change covers it, and above the nav
+   (z 50) so it stays legible while the header is solid. */
+.gs-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  height: 2px;
+  width: 100%;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #0891B2, #22D3EE 60%, #67E8F9);
+  box-shadow: 0 0 14px rgba(34, 211, 238, .5);
+  pointer-events: none;
+}
+
+/* ── Button feedback ──────────────────────────────────────────────────────
+   A sheen sweeps across on hover. This is done with a pseudo-element and
+   `transform`, never by animating the element's own transform: several of
+   these buttons already carry Tailwind scale utilities, and writing transform
+   from CSS as well would clobber them. */
+.gs-landing-primary,
+.gs-nav-cta,
+.gs-landing-secondary { position: relative; overflow: hidden; isolation: isolate; }
+.gs-landing-primary::after,
+.gs-nav-cta::after,
+.gs-landing-secondary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .38) 50%, transparent 62%);
+  transform: translateX(-130%);
+  transition: transform .72s cubic-bezier(.16, 1, .3, 1);
+  pointer-events: none;
+}
+.gs-landing-secondary::after { background: linear-gradient(105deg, transparent 38%, rgba(34, 211, 238, .22) 50%, transparent 62%); }
+.gs-landing-primary:hover::after,
+.gs-nav-cta:hover::after,
+.gs-landing-secondary:hover::after { transform: translateX(130%); }
+
+/* Pressed state is carried by brightness and shadow rather than scale, for the
+   same no-transform-collision reason. */
+.gs-landing-primary:active,
+.gs-nav-cta:active { filter: brightness(.92); box-shadow: 0 2px 10px rgba(34, 211, 238, .18); }
+.gs-landing-secondary:active { filter: brightness(1.12); }
+
+/* Nav links get an underline that draws from the left on hover. */
+.gs-nav-link, .gs-nav-trigger { position: relative; }
+.gs-nav-link::before, .gs-nav-trigger::before {
+  content: "";
+  position: absolute;
+  right: .65rem;
+  bottom: 22px;
+  left: .65rem;
+  height: 1px;
+  background: currentColor;
+  opacity: .55;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .34s cubic-bezier(.16, 1, .3, 1);
+}
+.gs-nav-link:hover::before, .gs-nav-trigger:hover::before { transform: scaleX(1); }
+
+/* One visible, on-brand focus ring for every interactive element. Keyboard
+   users get the same quality of feedback as pointer users. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #22D3EE;
+  outline-offset: 3px;
+  border-radius: 4px;
+}

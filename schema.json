@@ -1,0 +1,167 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GridSenseDataContract",
+  "description": "Unified data contract between Simulation, GNN Inference, Root-Cause Analysis, Physics Validation, API, and 3D UI",
+  "type": "object",
+  "properties": {
+    "grid_state": {
+      "type": "object",
+      "properties": {
+        "timestamp": { "type": "string", "format": "date-time" },
+        "grid_id": { "type": "string", "enum": ["ieee24", "ieee39", "ieee118"] },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "bus_id": { "type": "integer" },
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["bus", "transformer", "generator", "load", "substation"] },
+              "position": {
+                "type": "object",
+                "properties": {
+                  "x": { "type": "number" },
+                  "y": { "type": "number" },
+                  "z": { "type": "number" }
+                },
+                "required": ["x", "y", "z"]
+              },
+              "features": {
+                "type": "object",
+                "properties": {
+                  "load_pct": { "type": "number" },
+                  "voltage_pu": { "type": "number" },
+                  "temperature_c": { "type": "number" },
+                  "age_years": { "type": "number" },
+                  "capacity_mva": { "type": "number" },
+                  "p_mw": { "type": "number" },
+                  "q_mvar": { "type": "number" },
+                  "is_tripped": { "type": "boolean" }
+                },
+                "required": ["load_pct", "voltage_pu", "temperature_c", "capacity_mva"]
+              }
+            },
+            "required": ["id", "type", "position", "features"]
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "source": { "type": "string" },
+              "target": { "type": "string" },
+              "type": { "type": "string", "enum": ["line", "trafo", "feeder"] },
+              "capacity_mva": { "type": "number" },
+              "loading_pct": { "type": "number" },
+              "p_from_mw": { "type": "number" },
+              "q_from_mvar": { "type": "number" },
+              "r_ohm": { "type": "number" },
+              "x_ohm": { "type": "number" },
+              "is_tripped": { "type": "boolean" }
+            },
+            "required": ["id", "source", "target", "type", "capacity_mva", "loading_pct"]
+          }
+        }
+      },
+      "required": ["timestamp", "grid_id", "nodes", "edges"]
+    },
+    "model_output": {
+      "type": "object",
+      "properties": {
+        "node_risk": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "time_to_critical": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        },
+        "root_cause_ranking": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "node": { "type": "string" },
+              "root_cause_score": { "type": "number", "minimum": 0, "maximum": 1 },
+              "explained_by_upstream": { "type": "boolean" },
+              "explained_by": { "type": ["string", "null"] },
+              "reasons": { "type": "array", "items": { "type": "string" } }
+            },
+            "required": ["node", "root_cause_score", "explained_by_upstream"]
+          }
+        },
+        "confidence_interval": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "cascade_path": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "cascade_timeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": { "type": "integer" },
+              "node": { "type": "string" },
+              "event": { "type": "string" },
+              "cascade_risk_pct": { "type": "number" }
+            },
+            "required": ["step", "node", "event"]
+          }
+        },
+        "cascade_risk_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "predicted_failures": { "type": "array", "items": { "type": "string" } },
+        "feature_attributions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "Temperature": { "type": "number" },
+              "Load": { "type": "number" },
+              "Neighbor transfer": { "type": "number" },
+              "Voltage deviation": { "type": "number" },
+              "Other": { "type": "number" }
+            }
+          }
+        },
+        "recommended_intervention": {
+          "type": "object",
+          "properties": {
+            "action": { "type": "string" },
+            "target_node": { "type": "string" },
+            "reduction_pct": { "type": "number" },
+            "redistribute_to": { "type": "array", "items": { "type": "string" } },
+            "expected_risk_reduction": { "type": "number" },
+            "narrative": { "type": "string" }
+          }
+        },
+        "physics_validation": {
+          "type": "object",
+          "properties": {
+            "power_balance_ok": { "type": "boolean" },
+            "voltage_constraints_ok": { "type": "boolean" },
+            "thermal_constraints_ok": { "type": "boolean" },
+            "powerflow_converged": { "type": "boolean" },
+            "total_generation_mw": { "type": "number" },
+            "total_load_mw": { "type": "number" },
+            "total_losses_mw": { "type": "number" },
+            "mismatch_mw": { "type": "number" }
+          },
+          "required": ["power_balance_ok", "voltage_constraints_ok", "powerflow_converged"]
+        }
+      },
+      "required": ["node_risk", "root_cause_ranking", "confidence_interval", "cascade_path", "cascade_risk_pct", "physics_validation"]
+    }
+  },
+  "required": ["grid_state", "model_output"]
+}

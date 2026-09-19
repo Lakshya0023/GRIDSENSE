@@ -1,0 +1,229 @@
+{
+  "IN-C15586-TR01": {
+    "asset_id": "IN-C15586-TR01",
+    "workflow_state": "Acknowledged",
+    "owner": null,
+    "telemetry": {
+      "asset_id": "IN-C15586-TR01",
+      "city": "Fyz\u0101b\u0101d",
+      "state": "Uttar Pradesh",
+      "lat": 26.81216,
+      "lon": 82.18873,
+      "voltage_kv": 33,
+      "load_pct": 79.8,
+      "voltage_pu": 0.97,
+      "temperature_c": 66.0,
+      "risk_pct": 19.1,
+      "status": "WARNING"
+    },
+    "created_at": "2026-09-07T10:35:04.938880+00:00",
+    "updated_at": "2026-09-07T10:35:05.015142+00:00",
+    "events": [
+      {
+        "at": "2026-09-07T10:35:04.938892+00:00",
+        "type": "created",
+        "message": "Alert created from simulated telemetry."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938892+00:00",
+        "type": "notification_queued",
+        "message": "Demo notification queued for Fyz\u0101b\u0101d, Uttar Pradesh."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938892+00:00",
+        "type": "workflow",
+        "message": "State set to New by GridSense demo operator."
+      },
+      {
+        "at": "2026-09-07T10:35:05.015142+00:00",
+        "type": "workflow",
+        "message": "State set to Acknowledged by GridSense demo operator."
+      }
+    ]
+  },
+  "IN-C19740-TR02": {
+    "asset_id": "IN-C19740-TR02",
+    "workflow_state": "New",
+    "owner": null,
+    "telemetry": {
+      "asset_id": "IN-C19740-TR02",
+      "city": "Kulti",
+      "state": "West Bengal",
+      "lat": 23.76755,
+      "lon": 86.85016,
+      "voltage_kv": 33,
+      "load_pct": 79.6,
+      "voltage_pu": 0.971,
+      "temperature_c": 67.1,
+      "risk_pct": 18.6,
+      "status": "WARNING"
+    },
+    "created_at": "2026-09-07T10:35:04.938903+00:00",
+    "updated_at": "2026-09-07T10:35:04.938905+00:00",
+    "events": [
+      {
+        "at": "2026-09-07T10:35:04.938910+00:00",
+        "type": "created",
+        "message": "Alert created from simulated telemetry."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938910+00:00",
+        "type": "notification_queued",
+        "message": "Demo notification queued for Kulti, West Bengal."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938910+00:00",
+        "type": "workflow",
+        "message": "State set to New by GridSense demo operator."
+      }
+    ]
+  },
+  "IN-C03302-TR01": {
+    "asset_id": "IN-C03302-TR01",
+    "workflow_state": "New",
+    "owner": null,
+    "telemetry": {
+      "asset_id": "IN-C03302-TR01",
+      "city": "P\u0101lanpur",
+      "state": "Gujarat",
+      "lat": 24.14208,
+      "lon": 72.40145,
+      "voltage_kv": 33,
+      "load_pct": 79.5,
+      "voltage_pu": 0.971,
+      "temperature_c": 63.2,
+      "risk_pct": 18.2,
+      "status": "WARNING"
+    },
+    "created_at": "2026-09-07T10:35:04.938921+00:00",
+    "updated_at": "2026-09-07T10:35:04.938922+00:00",
+    "events": [
+      {
+        "at": "2026-09-07T10:35:04.938923+00:00",
+        "type": "created",
+        "message": "Alert created from simulated telemetry."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938923+00:00",
+        "type": "notification_queued",
+        "message": "Demo notification queued for P\u0101lanpur, Gujarat."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938923+00:00",
+        "type": "workflow",
+        "message": "State set to New by GridSense demo operator."
+      }
+    ]
+  },
+  "IN-C03800-TR01": {
+    "asset_id": "IN-C03800-TR01",
+    "workflow_state": "New",
+    "owner": null,
+    "telemetry": {
+      "asset_id": "IN-C03800-TR01",
+      "city": "Amb\u0101la",
+      "state": "Haryana",
+      "lat": 30.37015,
+      "lon": 76.78773,
+      "voltage_kv": 33,
+      "load_pct": 79.4,
+      "voltage_pu": 0.972,
+      "temperature_c": 56.8,
+      "risk_pct": 17.8,
+      "status": "WARNING"
+    },
+    "created_at": "2026-09-07T10:35:04.938927+00:00",
+    "updated_at": "2026-09-07T10:35:04.938932+00:00",
+    "events": [
+      {
+        "at": "2026-09-07T10:35:04.938934+00:00",
+        "type": "created",
+        "message": "Alert created from simulated telemetry."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938934+00:00",
+        "type": "notification_queued",
+        "message": "Demo notification queued for Amb\u0101la, Haryana."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938934+00:00",
+        "type": "workflow",
+        "message": "State set to New by GridSense demo operator."
+      }
+    ]
+  },
+  "IN-C02527-TR02": {
+    "asset_id": "IN-C02527-TR02",
+    "workflow_state": "New",
+    "owner": null,
+    "telemetry": {
+      "asset_id": "IN-C02527-TR02",
+      "city": "Korba",
+      "state": "Chhattisgarh",
+      "lat": 22.34896,
+      "lon": 82.66882,
+      "voltage_kv": 33,
+      "load_pct": 78.2,
+      "voltage_pu": 0.974,
+      "temperature_c": 62.5,
+      "risk_pct": 14.7,
+      "status": "WARNING"
+    },
+    "created_at": "2026-09-07T10:35:04.938940+00:00",
+    "updated_at": "2026-09-07T10:35:04.938941+00:00",
+    "events": [
+      {
+        "at": "2026-09-07T10:35:04.938942+00:00",
+        "type": "created",
+        "message": "Alert created from simulated telemetry."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938942+00:00",
+        "type": "notification_queued",
+        "message": "Demo notification queued for Korba, Chhattisgarh."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938942+00:00",
+        "type": "workflow",
+        "message": "State set to New by GridSense demo operator."
+      }
+    ]
+  },
+  "IN-C03292-TR01": {
+    "asset_id": "IN-C03292-TR01",
+    "workflow_state": "New",
+    "owner": null,
+    "telemetry": {
+      "asset_id": "IN-C03292-TR01",
+      "city": "Anand",
+      "state": "Gujarat",
+      "lat": 22.51994,
+      "lon": 72.92335,
+      "voltage_kv": 33,
+      "load_pct": 78.2,
+      "voltage_pu": 0.974,
+      "temperature_c": 63.4,
+      "risk_pct": 14.7,
+      "status": "WARNING"
+    },
+    "created_at": "2026-09-07T10:35:04.938945+00:00",
+    "updated_at": "2026-09-07T10:35:04.938946+00:00",
+    "events": [
+      {
+        "at": "2026-09-07T10:35:04.938947+00:00",
+        "type": "created",
+        "message": "Alert created from simulated telemetry."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938947+00:00",
+        "type": "notification_queued",
+        "message": "Demo notification queued for Anand, Gujarat."
+      },
+      {
+        "at": "2026-09-07T10:35:04.938947+00:00",
+        "type": "workflow",
+        "message": "State set to New by GridSense demo operator."
+      }
+    ]
+  }
+}

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GridSense Pro — Real-Time AI Power Grid Resilience & GIS Explorer</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <!-- Lucide Icons & FontAwesome -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="/static/styles.css">
+
+  <style>
+    #leaflet-map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      z-index: 1;
+      background-color: #080c14;
+    }
+
+    .leaflet-container {
+      background: #080c14 !important;
+      font-family: 'Inter', sans-serif !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: rgba(15, 23, 42, 0.95) !important;
+      color: #f8fafc !important;
+      backdrop-filter: blur(12px) !important;
+      border: 1px solid rgba(6, 182, 212, 0.4) !important;
+      border-radius: 8px !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7) !important;
+      padding: 2px !important;
+    }
+
+    .leaflet-popup-tip {
+      background: rgba(15, 23, 42, 0.95) !important;
+    }
+
+    .leaflet-popup-content {
+      margin: 8px 12px !important;
+      font-size: 11px !important;
+      line-height: 1.4 !important;
+    }
+      margin: 8px 12px !important;
+      font-size: 11px !important;
+      line-height: 1.4 !important;
+    }
+
+    /* Custom Leaflet Map Markers */
+    .grid-node-icon {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .node-marker-body {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+    }
+
+    .node-marker-body:hover {
+      transform: scale(1.4);
+    }
+
+    .marker-substation {
+      border-radius: 4px !important;
+      width: 20px !important;
+      height: 20px !important;
+    }
+
+    .marker-healthy {
+      background-color: #10b981;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.7);
+    }
+
+    .marker-alert {
+      background-color: #f59e0b;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.8);
+    }
+
+    .marker-critical {
+      background-color: #ef4444;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.9);
+      animation: pulse-ring-crit 1.5s infinite;
+    }
+
+    .marker-root-cause {
+      background-color: #fbbf24 !important;
+      border-color: #ffffff !important;
+      animation: pulse-ring-root 1.8s infinite;
+    }
+
+    @keyframes pulse-ring-root {
+      0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.9), 0 0 12px #fbbf24; }
+      70% { box-shadow: 0 0 0 14px rgba(251, 191, 36, 0), 0 0 12px #fbbf24; }
+      100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0), 0 0 12px #fbbf24; }
+    }
+
+    @keyframes pulse-ring-crit {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.9), 0 0 12px #ef4444; }
+      70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0), 0 0 12px #ef4444; }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0), 0 0 12px #ef4444; }
+    }
+  </style>
+</head>
+<body class="bg-[#080c14] text-slate-100 min-h-screen flex flex-col">
+
+  <!-- TOP APP BAR -->
+  <header class="border-b border-slate-800/80 bg-[#0d1322]/90 backdrop-blur-md sticky top-0 z-50 px-4 py-2.5 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <i data-lucide="zap" class="w-5 h-5 text-slate-950 font-bold"></i>
+        </div>
+        <div>
+          <span class="text-base font-extrabold tracking-wider text-white">GRID<span class="text-cyan-400">SENSE</span> <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/50 font-mono ml-1">PRO</span></span>
+          <p class="text-[10px] text-slate-400 font-mono">REAL-TIME SCADA TELEMETRY &bull; GNN CAUSAL RESILIENCY</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <!-- Live SCADA Streaming Status -->
+        <div class="flex items-center space-x-1.5 bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800 text-xs font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span class="text-emerald-400 font-bold" id="live-stream-badge">LIVE REAL-TIME STREAM</span>
+        </div>
+        <button onclick="GridApp.toggleLiveStream()" id="btn-toggle-stream" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono border border-slate-700 transition flex items-center space-x-1">
+          <i data-lucide="pause" class="w-3 h-3 text-cyan-400"></i>
+          <span id="btn-stream-text">Pause Stream</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Badges -->
+    <div class="flex items-center space-x-4 text-xs font-mono">
+      <div class="hidden lg:flex items-center space-x-2 bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800">
+        <span class="text-slate-400">FREQUENCY (60Hz)</span>
+        <span id="header-freq" class="text-emerald-400 font-bold">59.98 Hz</span>
+      </div>
+
+      <div class="flex items-center space-x-2 bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800">
+        <span class="text-slate-400">GRID STATUS</span>
+        <span id="header-status-badge" class="px-2 py-0.5 rounded text-[11px] font-bold badge-healthy">98.4% STABLE</span>
+      </div>
+
+      <div class="hidden sm:flex items-center space-x-2 bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-300">
+        <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span id="live-clock">UTC 14:38:00</span>
+      </div>
+
+      <a href="http://localhost:3000" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs flex items-center space-x-1.5 transition shadow-md shadow-cyan-600/20">
+        <i data-lucide="home" class="w-3.5 h-3.5"></i>
+        <span>Home Landing Page</span>
+      </a>
+    </div>
+  </header>
+
+
+
+  <!-- MAIN 3-COLUMN WORKSPACE -->
+  <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 overflow-hidden">
+
+    <!-- LEFT COLUMN: ASSET QUICK FOCUS (33 NODES), CATEGORIES & LIVE ALERTS (3 Cols) -->
+    <section class="lg:col-span-3 flex flex-col space-y-3 overflow-y-auto max-h-[calc(100vh-180px)] pr-1">
+
+      <!-- ASSET QUICK FOCUS (33 NODES) -->
+      <div class="glass-panel p-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-3">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Asset Quick Focus</h2>
+          </div>
+          <span class="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">33 NODES</span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <!-- Substation S1 -->
+          <div onclick="GridApp.focusNode('S1')" class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded bg-emerald-950/80 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="font-bold text-slate-200 text-xs">Substation S1 (Seattle)</p>
+                <p class="text-[10px] text-slate-400 font-mono">1.2 GW Active Feed</p>
+              </div>
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          </div>
+
+          <!-- Transformer T17 (LA Basin) -->
+          <div id="asset-card-t17" onclick="GridApp.focusNode('T17')" class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 border border-amber-500/40 hover:border-amber-400 cursor-pointer transition shadow-md shadow-amber-950/20">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded bg-amber-950/80 border border-amber-800/60 flex items-center justify-center text-amber-400">
+                <i data-lucide="cpu" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="font-bold text-amber-300 text-xs">Transformer T17 (LA Basin)</p>
+                <p class="text-[10px] text-slate-300 font-mono" id="asset-t17-meta">Load: 84.2% &bull; Temp: 71°C</p>
+              </div>
+            </div>
+            <span id="asset-t17-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+          </div>
+
+          <!-- Feeder F8 (Bay Area) -->
+          <div onclick="GridApp.focusNode('F8')" class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-rose-500/50 cursor-pointer transition">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded bg-rose-950/80 border border-rose-800/60 flex items-center justify-center text-rose-400">
+                <i data-lucide="git-branch" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="font-bold text-slate-200 text-xs">Feeder F8 (Bay Area)</p>
+                <p class="text-[10px] text-slate-400 font-mono">Downstream Trunk</p>
+              </div>
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+          </div>
+
+          <!-- Substation S4 (Willamette) -->
+          <div onclick="GridApp.focusNode('S4')" class="flex items-center justify-between p-2 rounded-lg bg-slate-900/60 border border-slate-800/80 hover:border-cyan-500/50 cursor-pointer transition">
+            <div class="flex items-center space-x-2">
+              <div class="w-6 h-6 rounded bg-slate-800 flex items-center justify-center text-cyan-400 text-[11px] font-bold">S4</div>
+              <div>
+                <p class="font-semibold text-slate-300 text-xs">Substation S4 (Portland)</p>
+                <p class="text-[9px] text-slate-500">Regional Step-Down</p>
+              </div>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          </div>
+
+          <!-- Transformer T21 (Reno / Tahoe) -->
+          <div onclick="GridApp.focusNode('T21')" class="flex items-center justify-between p-2 rounded-lg bg-slate-900/60 border border-slate-800/80 hover:border-cyan-500/50 cursor-pointer transition">
+            <div class="flex items-center space-x-2">
+              <div class="w-6 h-6 rounded bg-slate-800 flex items-center justify-center text-cyan-400 text-[11px] font-bold">T21</div>
+              <div>
+                <p class="font-semibold text-slate-300 text-xs">Transformer T21 (Reno/Tahoe)</p>
+                <p class="text-[9px] text-slate-500">Lateral 1 Step-Down</p>
+              </div>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE ALERTS CARD -->
+      <div class="glass-panel p-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-2.5">
+          <div class="flex items-center space-x-1.5">
+            <i data-lucide="bell" class="w-3.5 h-3.5 text-amber-400"></i>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Live Alerts</h2>
+          </div>
+          <span id="alert-count-badge" class="px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 text-[10px] font-mono">1 ALERT ACTIVE</span>
+        </div>
+
+        <div id="alerts-container" class="space-y-2 text-xs">
+          <div class="p-2.5 rounded-lg bg-amber-950/40 border border-amber-800/60 flex items-start space-x-2">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+            <div>
+              <p class="font-bold text-amber-300 text-xs" id="alert-main-title">Transformer T17 Overload Alert</p>
+              <p class="text-[10px] text-slate-300 mt-0.5" id="alert-main-desc">GNN flags 86% failure risk 6h ahead of SCADA threshold alert.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REAL-TIME SIMULATION & STRESS INJECTION TRIGGER -->
+      <div class="glass-panel p-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-2.5">
+          <div class="flex items-center space-x-1.5">
+            <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Stress Simulation Injection</h2>
+          </div>
+        </div>
+
+        <div class="space-y-2.5 text-xs font-mono">
+          <div class="flex justify-between text-[11px]">
+            <span class="text-slate-400">Demand Multiplier:</span>
+            <span id="label-stress-val" class="text-amber-400 font-bold">1.85x (+85%)</span>
+          </div>
+          <input type="range" id="slider-stress" min="1.0" max="2.6" step="0.05" value="1.85" class="accent-cyan-400">
+          
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button id="btn-simulate" onclick="GridApp.runCustomSimulation()" class="py-2 px-2.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1 shadow-lg shadow-cyan-600/20 transition">
+              <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+              <span>Inject Stress</span>
+            </button>
+            <button id="btn-reset" onclick="GridApp.resetHealthy()" class="py-2 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs flex items-center justify-center space-x-1 border border-slate-700 transition">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>Normal Grid</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- CENTER COLUMN: CLEAN GEOSPATIAL POWER GRID MAP WITH POINT CATEGORIES (6 Cols) -->
+    <section class="lg:col-span-6 flex flex-col space-y-3">
+      <div class="glass-panel p-3 flex-1 flex flex-col relative min-h-[500px]">
+
+        <!-- MAP HEADER: SEARCH, CATEGORY FILTERS & FIT BOUNDS -->
+        <div class="flex flex-wrap items-center justify-between pb-2.5 border-b border-slate-800 text-xs gap-2">
+          <!-- Search Box -->
+          <div class="flex items-center bg-slate-900/90 border border-slate-700/80 rounded-lg px-2.5 py-1 max-w-[210px] flex-1">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 mr-1.5"></i>
+            <input type="text" id="mapSearch" placeholder="Search node or city..." class="bg-transparent border-none text-slate-200 text-xs outline-none w-full">
+            <button onclick="GridApp.searchNode()" class="text-[10px] font-bold text-cyan-400 ml-1">GO</button>
+          </div>
+
+          <!-- Category Filter (Substations, Transformers, Feeders) -->
+          <select id="mapTypeFilter" onchange="GridApp.filterMarkers()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 font-mono">
+            <option value="">All Categories (33)</option>
+            <option value="substation">Substations (S1, S4)</option>
+            <option value="transformer">Transformers (T17, T21...)</option>
+            <option value="feeder_node">Feeders (F8, F12...)</option>
+          </select>
+
+          <!-- Scenario Selector (5000+ Conditions Dataset) -->
+          <select id="mapScenarioFilter" onchange="GridApp.switchScenario(this.value)" class="bg-slate-900 border border-cyan-700/80 rounded-lg px-2 py-1 text-xs text-cyan-300 font-mono max-w-[210px]" title="Select Pre-Calibrated Condition Scenario">
+            <option value="scenario_t17_overload">🔥 Nashik T17 Surge (86%)</option>
+            <option value="scenario_normal">🟢 All-India Baseline (3.2%)</option>
+            <option value="scenario_f8_storm">⛈️ Pune-Nashik F8 Storm</option>
+            <option value="scenario_heatwave">☀️ Heatwave 42°C Stress</option>
+            <option value="IND-S00000">🇮🇳 Dataset: S00000 Thermal</option>
+            <option value="IND-S00002">🇮🇳 Dataset: S00002 Emergency</option>
+          </select>
+
+          <!-- Status Filter -->
+          <select id="mapStatusFilter" onchange="GridApp.filterMarkers()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-200 font-mono">
+            <option value="">All Statuses</option>
+            <option value="healthy">Healthy (<30%)</option>
+            <option value="stressed">Stressed (30-70%)</option>
+            <option value="critical">Critical (>70%)</option>
+          </select>
+
+          <!-- Fit Bounds & Cascade Path Toggle -->
+          <div class="flex items-center space-x-1 font-mono text-[11px]">
+            <button onclick="GridApp.fitAllBounds()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center space-x-1" title="Fit All Grid Assets">
+              <i data-lucide="maximize-2" class="w-3 h-3 text-cyan-400"></i>
+              <span>Fit All</span>
+            </button>
+            <button id="toggle-path" onclick="GridApp.toggleCascadePath()" class="px-2 py-1 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/80 hover:bg-cyan-900 transition flex items-center space-x-1">
+              <i data-lucide="git-branch" class="w-3 h-3"></i>
+              <span>Path</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- LEAFLET MAP CONTAINER -->
+        <div class="flex-1 relative w-full h-full min-h-[420px] bg-[#070b12] rounded-lg overflow-hidden border border-slate-800/60 mt-2">
+          <div id="leaflet-map"></div>
+
+          <!-- Map Legend Overlay (Categories & Statuses) -->
+          <div class="absolute bottom-3 left-3 bg-[#0d1322]/95 backdrop-blur-md p-2.5 rounded-lg border border-slate-800 text-[10px] font-mono flex items-center space-x-3 text-slate-300 shadow-xl z-[1000]">
+            <div class="flex items-center space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              <span>Healthy (<30%)</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+              <span>Stressed</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+              <span>Critical</span>
+            </div>
+            <div class="flex items-center space-x-1.5 pl-2 border-l border-slate-700">
+              <span class="w-3 h-3 rounded-full border-2 border-amber-400 bg-amber-400/20"></span>
+              <span class="text-amber-300 font-bold">Root Cause</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-Time Cascade Path Step Bar -->
+        <div class="mt-2.5 bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between text-xs">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="zap" class="w-4 h-4 text-cyan-400"></i>
+            <span class="font-bold text-slate-300">Predicted Cascade Path:</span>
+            <div id="cascade-path-pills" class="flex items-center space-x-1.5 font-mono text-[11px]">
+              <span class="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-700 font-bold">T17 (Origin)</span>
+              <i data-lucide="arrow-right" class="w-3 h-3 text-slate-500"></i>
+              <span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800">F8</span>
+              <i data-lucide="arrow-right" class="w-3 h-3 text-slate-500"></i>
+              <span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800">T21</span>
+              <i data-lucide="arrow-right" class="w-3 h-3 text-slate-500"></i>
+              <span class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800">S4</span>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2 font-mono">
+            <span class="text-slate-400 text-[11px]">CASCADE RISK:</span>
+            <span id="cascade-risk-meter" class="px-2 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700 font-bold text-xs">86.0%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: CURRENT STATUS OF THE GRID (LOADING, VOLTAGE, TEMP, TTC, ALERT) (3 Cols) -->
+    <section class="lg:col-span-3 flex flex-col space-y-3 overflow-y-auto max-h-[calc(100vh-180px)] pl-1">
+
+      <!-- CURRENT STATUS OF THE GRID -->
+      <div class="glass-panel p-4 glow-amber">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-2.5">
+          <div class="flex items-center space-x-1.5">
+            <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-100">Current Grid Status</h2>
+          </div>
+          <span id="ins-status-badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-950 text-amber-300 border border-amber-800">ALERT</span>
+        </div>
+
+        <div class="mb-3">
+          <h3 id="ins-asset-name" class="text-sm font-extrabold text-cyan-300 font-mono">Transformer T17</h3>
+          <p id="ins-location" class="text-[11px] text-slate-400">Los Angeles Basin Grid &bull; 34.05°N, 118.24°W</p>
+        </div>
+
+        <!-- 4 Primary Telemetry Metrics Required by User -->
+        <div class="space-y-2 text-xs font-mono">
+          <!-- LOADING -->
+          <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-400 font-bold">LOADING</span>
+            <span id="ins-load" class="text-amber-400 font-extrabold text-base">84.2%</span>
+          </div>
+
+          <!-- VOLTAGE -->
+          <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-400 font-bold">VOLTAGE</span>
+            <span id="ins-volt" class="text-slate-100 font-extrabold text-base">0.972 pu</span>
+          </div>
+
+          <!-- TEMPERATURE -->
+          <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-400 font-bold">TEMPERATURE</span>
+            <span id="ins-temp" class="text-rose-400 font-extrabold text-base">71.0 °C</span>
+          </div>
+
+          <!-- TIME TO CRITICAL -->
+          <div class="flex items-center justify-between bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+            <span class="text-slate-400 font-bold">TIME TO CRITICAL</span>
+            <span id="ins-ttc" class="text-cyan-300 font-extrabold text-base">6.2 hrs</span>
+          </div>
+        </div>
+
+        <!-- 24H Profile Sparkline -->
+        <div class="bg-slate-900/80 p-2 rounded-lg border border-slate-800 mt-2.5">
+          <span class="text-[10px] font-mono text-slate-400 block mb-1">VOLTAGE PROFILE (PU)</span>
+          <div class="h-14 w-full">
+            <canvas id="insSparkline"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROOT CAUSE VS SYMPTOM DISAMBIGUATOR -->
+      <div class="glass-panel p-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-2.5">
+          <div class="flex items-center space-x-1.5">
+            <i data-lucide="crosshair" class="w-4 h-4 text-amber-400"></i>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-100">Root Cause vs. Symptom</h2>
+          </div>
+          <span class="text-[10px] font-mono text-amber-400 bg-amber-950 px-1.5 py-0.5 rounded border border-amber-800">CAUSAL</span>
+        </div>
+
+        <div class="space-y-2 text-xs font-mono">
+          <!-- True Root Cause -->
+          <div class="p-2.5 rounded-lg bg-amber-950/30 border border-amber-600/70">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-amber-300 flex items-center space-x-1">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span id="rc-node-id">T17 — TRUE ROOT CAUSE</span>
+              </span>
+              <span id="rc-score-badge" class="px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 font-bold text-[10px]">91% Score</span>
+            </div>
+            <p class="text-[10px] text-slate-300 mt-1 font-sans">
+              Onset at <span class="text-amber-400 font-mono font-bold">t = 0m</span>. No upstream neighbor explains this overload. Initiating thermal failure point.
+            </p>
+          </div>
+
+          <!-- Downstream Symptom 1 -->
+          <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-[11px]">
+            <div class="flex items-center justify-between text-slate-400">
+              <span class="flex items-center space-x-1">
+                <i data-lucide="arrow-down-right" class="w-3 h-3 text-rose-400"></i>
+                <span class="font-bold text-slate-300">F8 — Downstream Symptom</span>
+              </span>
+              <span class="text-[10px] text-slate-400">Score 22%</span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-0.5 font-sans">
+              Onset at <span class="font-mono text-cyan-400">t = 15m</span>. Explained by upstream power surge from <span class="text-amber-300 font-mono">T17</span> (Lag corr: 0.84).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SPLIT-CONFORMAL UNCERTAINTY & MITIGATION LOOP -->
+      <div class="glass-panel p-4 glow-emerald">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 mb-2.5">
+          <div class="flex items-center space-x-1.5">
+            <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-slate-100">What-If Mitigation</h2>
+          </div>
+          <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-800">90% CI</span>
+        </div>
+
+        <div class="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-800/60 mb-2.5 text-xs">
+          <p class="text-[11px] font-semibold text-emerald-300 mb-1">Recommended Action:</p>
+          <p class="text-[10px] text-slate-300 font-sans" id="intervene-action-desc">
+            Reduce T17 load by 12%, redistribute active power across tie lines to T14 and T19.
+          </p>
+        </div>
+
+        <!-- Before vs After Comparison Meter -->
+        <div class="space-y-2 text-xs font-mono">
+          <div class="flex items-center justify-between bg-slate-900/90 p-2 rounded-lg border border-slate-800">
+            <div>
+              <span class="text-[10px] text-slate-400 block">BEFORE</span>
+              <span class="text-sm font-extrabold text-rose-400" id="meter-before-val">86% RISK</span>
+            </div>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-cyan-400"></i>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 block">AFTER</span>
+              <span class="text-sm font-extrabold text-emerald-400" id="meter-after-val">18% RISK</span>
+            </div>
+          </div>
+
+          <button id="btn-apply-intervention" onclick="GridApp.applyIntervention()" class="w-full py-2.5 px-3 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold text-xs flex items-center justify-center space-x-1.5 shadow-lg shadow-emerald-500/20 transition">
+            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            <span>Apply Mitigation Action</span>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- BOTTOM TELEMETRY BAR (Exact specifications required by user) -->
+  <footer class="border-t border-slate-800/80 bg-[#0d1322]/95 backdrop-blur-md px-4 py-2.5 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
+
+    <!-- NETWORK STABILITY: 98.4% STABLE -->
+    <div class="flex items-center space-x-3 border-r border-slate-800/80 pr-2">
+      <div class="w-9 h-9 rounded-lg bg-emerald-950 border border-emerald-800/60 flex items-center justify-center text-emerald-400 font-bold">
+        <i data-lucide="activity" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <p class="text-[10px] text-slate-400 font-mono">NETWORK STABILITY</p>
+        <p class="text-sm font-extrabold text-emerald-400" id="footer-stability">98.4% STABLE</p>
+      </div>
+    </div>
+
+    <!-- CURRENT DEMAND: 4.25 GW +1.2% -->
+    <div class="flex items-center space-x-3 border-r border-slate-800/80 pr-2">
+      <div>
+        <p class="text-[10px] text-slate-400 font-mono">CURRENT DEMAND</p>
+        <p class="text-sm font-extrabold text-cyan-400 font-mono" id="footer-demand">4.25 GW <span class="text-[10px] text-emerald-400 font-normal font-sans">+1.2%</span></p>
+      </div>
+    </div>
+
+    <!-- GEN MIX: 61% Clean • 17% Nuc (with SVG ring) -->
+    <div class="flex items-center space-x-2.5 border-r border-slate-800/80 pr-2">
+      <svg class="w-8 h-8 shrink-0" viewBox="0 0 36 36">
+        <path class="text-slate-800" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+        <path class="text-emerald-400 donut-ring" stroke-dasharray="61, 100" stroke-width="4" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+      </svg>
+      <div>
+        <p class="text-[10px] text-slate-400 font-mono">GEN MIX</p>
+        <p class="text-[11px] font-semibold text-slate-200"><span class="text-emerald-400 font-bold">61%</span> Clean &bull; <span class="text-cyan-400 font-bold">17%</span> Nuc</p>
+      </div>
+    </div>
+
+    <!-- FREQUENCY (60Hz): 59.98 Hz -->
+    <div class="flex items-center space-x-2.5 border-r border-slate-800/80 pr-2">
+      <div>
+        <p class="text-[10px] text-slate-400 font-mono">FREQUENCY (60Hz)</p>
+        <p class="text-sm font-extrabold font-mono text-emerald-400" id="footer-freq">59.98 Hz</p>
+      </div>
+      <svg class="w-14 h-5" viewBox="0 0 80 20">
+        <path d="M 0 10 Q 10 4 20 10 T 40 10 T 60 10 T 80 10" fill="none" stroke="#10b981" stroke-width="1.5" />
+      </svg>
+    </div>
+
+    <!-- BATTERY STORAGE: 480 MWh (84%) -->
+    <div class="flex items-center space-x-3 border-r border-slate-800/80 pr-2">
+      <div>
+        <p class="text-[10px] text-slate-400 font-mono">BATTERY STORAGE</p>
+        <p class="text-sm font-extrabold text-cyan-300 font-mono">480 MWh <span class="text-slate-400 text-xs font-normal">(84%)</span></p>
+      </div>
+    </div>
+
+    <!-- PHYSICS ENGINE: KIRCHHOFF CONVERGED -->
+    <div class="flex items-center space-x-2">
+      <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+      <div>
+        <p class="text-[10px] text-slate-400 font-mono">PHYSICS ENGINE</p>
+        <p class="text-[11px] font-bold text-slate-200 font-mono" id="footer-physics">KIRCHHOFF CONVERGED</p>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- App JavaScript Controller -->
+  <script src="./app.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

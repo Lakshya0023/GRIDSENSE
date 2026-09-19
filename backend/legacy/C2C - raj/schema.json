@@ -1,0 +1,154 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GridSenseDataContract",
+  "description": "GridSense canonical schema for grid state, ML risk predictions, causal root cause ranking, conformal uncertainty intervals, and cascade paths.",
+  "type": "object",
+  "required": ["grid_state", "model_output"],
+  "properties": {
+    "grid_state": {
+      "type": "object",
+      "required": ["timestamp", "nodes", "edges"],
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "topology_name": {
+          "type": "string",
+          "default": "IEEE 33-Bus Feeder"
+        },
+        "system_status": {
+          "type": "string",
+          "enum": ["HEALTHY", "ALERT", "CRITICAL_CASCADE", "ISOLATED"]
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "type", "features"],
+            "properties": {
+              "id": { "type": "string" },
+              "type": { "type": "string", "enum": ["substation", "transformer", "feeder_node", "load_bus", "generator"] },
+              "features": {
+                "type": "object",
+                "required": ["load_pct", "voltage_pu", "temperature_c", "age_years", "capacity_mva"],
+                "properties": {
+                  "load_pct": { "type": "number", "minimum": 0 },
+                  "voltage_pu": { "type": "number", "minimum": 0 },
+                  "temperature_c": { "type": "number" },
+                  "age_years": { "type": "number", "minimum": 0 },
+                  "capacity_mva": { "type": "number", "minimum": 0 },
+                  "active_power_mw": { "type": "number" },
+                  "reactive_power_mvar": { "type": "number" }
+                }
+              },
+              "status": {
+                "type": "string",
+                "enum": ["ONLINE", "OVERLOADED", "TRIPPED", "ISOLATED"]
+              },
+              "x": { "type": "number" },
+              "y": { "type": "number" }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source", "target", "type", "capacity_mva"],
+            "properties": {
+              "id": { "type": "string" },
+              "source": { "type": "string" },
+              "target": { "type": "string" },
+              "type": { "type": "string", "enum": ["feeder", "tie_line", "substation_feed", "transformer_tap"] },
+              "capacity_mva": { "type": "number", "minimum": 0 },
+              "loading_pct": { "type": "number", "minimum": 0 },
+              "flow_mw": { "type": "number" },
+              "impedance_pu": { "type": "number" },
+              "status": { "type": "string", "enum": ["CLOSED", "OPEN", "TRIPPED"] }
+            }
+          }
+        }
+      }
+    },
+    "model_output": {
+      "type": "object",
+      "required": ["node_risk", "root_cause_ranking", "confidence_interval", "cascade_path", "cascade_risk_pct"],
+      "properties": {
+        "node_risk": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "time_to_critical_hours": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        },
+        "root_cause_ranking": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["node", "root_cause_score", "explained_by_upstream"],
+            "properties": {
+              "node": { "type": "string" },
+              "root_cause_score": { "type": "number", "minimum": 0, "maximum": 1 },
+              "explained_by_upstream": { "type": "boolean" },
+              "explained_by": { "type": ["string", "null"] },
+              "lag_correlation_score": { "type": "number" },
+              "temporal_precedence_step": { "type": "integer" },
+              "contributing_factors": {
+                "type": "object",
+                "properties": {
+                  "temperature_pct": { "type": "number" },
+                  "load_growth_pct": { "type": "number" },
+                  "neighbor_transfer_pct": { "type": "number" },
+                  "component_age_pct": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "confidence_interval": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": { "type": "number" }
+          }
+        },
+        "conformal_coverage_pct": {
+          "type": "number",
+          "default": 90.0
+        },
+        "cascade_path": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "cascade_risk_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "physics_sanity_checks": {
+          "type": "object",
+          "properties": {
+            "power_balance_residual_mw": { "type": "number" },
+            "voltage_violations_count": { "type": "integer" },
+            "thermal_violations_count": { "type": "integer" },
+            "physics_consistent": { "type": "boolean" }
+          }
+        },
+        "recommended_intervention": {
+          "type": "object",
+          "properties": {
+            "action": { "type": "string" },
+            "target_node": { "type": "string" },
+            "load_shed_pct": { "type": "number" },
+            "reroute_targets": { "type": "array", "items": { "type": "string" } },
+            "expected_cascade_risk_after_pct": { "type": "number" }
+          }
+        }
+      }
+    }
+  }
+}

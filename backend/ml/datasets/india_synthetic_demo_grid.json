@@ -1,0 +1,485 @@
+{
+  "SYNTHETIC_DATA_DISCLAIMER": "This entire dataset is SYNTHETICALLY GENERATED for demo/prototyping purposes. City names and approximate coordinates are real; all node IDs, topology, and electrical feature values (load, voltage, temperature, age, capacity) are randomly generated with a fixed seed and do NOT represent any real substation, transformer, or utility's actual operating data. Do not use for any real grid planning or operational purpose.",
+  "grid_state": {
+    "grid_id": "india_demo_grid_v1",
+    "timestamp": "2026-09-06T00:00:00Z",
+    "nodes": [
+      {
+        "id": "DEL-SUBS-01",
+        "city": "Delhi",
+        "type": "substation",
+        "lat": 28.6557,
+        "lon": 77.0665,
+        "features": {
+          "load_pct": 51.5,
+          "voltage_pu": 0.947,
+          "temperature_c": 64.8,
+          "age_years": 23,
+          "capacity_mva": 40
+        }
+      },
+      {
+        "id": "DEL-TRAN-02",
+        "city": "Delhi",
+        "type": "transformer",
+        "lat": 28.641,
+        "lon": 77.0685,
+        "features": {
+          "load_pct": 40.6,
+          "voltage_pu": 0.948,
+          "temperature_c": 58.1,
+          "age_years": 19,
+          "capacity_mva": 100
+        }
+      },
+      {
+        "id": "DEL-FEED-03",
+        "city": "Delhi",
+        "type": "feeder",
+        "lat": 28.6787,
+        "lon": 77.2694,
+        "features": {
+          "load_pct": 60.2,
+          "voltage_pu": 0.974,
+          "temperature_c": 41.9,
+          "age_years": 29,
+          "capacity_mva": 25
+        }
+      },
+      {
+        "id": "DEL-GENE-04",
+        "city": "Delhi",
+        "type": "generator",
+        "lat": 28.6915,
+        "lon": 77.1069,
+        "features": {
+          "load_pct": 60.4,
+          "voltage_pu": 0.953,
+          "temperature_c": 38.8,
+          "age_years": 26,
+          "capacity_mva": 200
+        }
+      },
+      {
+        "id": "MUM-SUBS-01",
+        "city": "Mumbai",
+        "type": "substation",
+        "lat": 18.9567,
+        "lon": 72.8417,
+        "features": {
+          "load_pct": 56.5,
+          "voltage_pu": 0.961,
+          "temperature_c": 41.2,
+          "age_years": 3,
+          "capacity_mva": 500
+        }
+      },
+      {
+        "id": "MUM-TRAN-02",
+        "city": "Mumbai",
+        "type": "transformer",
+        "lat": 19.0869,
+        "lon": 73.0196,
+        "features": {
+          "load_pct": 57.7,
+          "voltage_pu": 0.986,
+          "temperature_c": 69.5,
+          "age_years": 21,
+          "capacity_mva": 200
+        }
+      },
+      {
+        "id": "MUM-FEED-03",
+        "city": "Mumbai",
+        "type": "feeder",
+        "lat": 19.0992,
+        "lon": 72.9391,
+        "features": {
+          "load_pct": 37.7,
+          "voltage_pu": 0.947,
+          "temperature_c": 42.5,
+          "age_years": 4,
+          "capacity_mva": 100
+        }
+      },
+      {
+        "id": "MUM-GENE-04",
+        "city": "Mumbai",
+        "type": "generator",
+        "lat": 19.1859,
+        "lon": 72.8417,
+        "features": {
+          "load_pct": 62.2,
+          "voltage_pu": 1.02,
+          "temperature_c": 36.1,
+          "age_years": 13,
+          "capacity_mva": 100
+        }
+      },
+      {
+        "id": "BEN-SUBS-01",
+        "city": "Bengaluru",
+        "type": "substation",
+        "lat": 13.0227,
+        "lon": 77.6551,
+        "features": {
+          "load_pct": 76,
+          "voltage_pu": 0.929,
+          "temperature_c": 59.7,
+          "age_years": 19,
+          "capacity_mva": 100
+        }
+      },
+      {
+        "id": "BEN-TRAN-02",
+        "city": "Bengaluru",
+        "type": "transformer",
+        "lat": 12.8706,
+        "lon": 77.5584,
+        "features": {
+          "load_pct": 94.4,
+          "voltage_pu": 0.997,
+          "temperature_c": 55.8,
+          "age_years": 23,
+          "capacity_mva": 200
+        }
+      },
+      {
+        "id": "BEN-FEED-03",
+        "city": "Bengaluru",
+        "type": "feeder",
+        "lat": 13.0745,
+        "lon": 77.6774,
+        "features": {
+          "load_pct": 48.7,
+          "voltage_pu": 0.924,
+          "temperature_c": 43.8,
+          "age_years": 10,
+          "capacity_mva": 40
+        }
+      },
+      {
+        "id": "BEN-GENE-04",
+        "city": "Bengaluru",
+        "type": "generator",
+        "lat": 12.8849,
+        "lon": 77.7275,
+        "features": {
+          "load_pct": 87.6,
+          "voltage_pu": 0.958,
+          "temperature_c": 60.8,
+          "age_years": 14,
+          "capacity_mva": 500
+        }
+      },
+      {
+        "id": "CHE-SUBS-01",
+        "city": "Chennai",
+        "type": "substation",
+        "lat": 12.9756,
+        "lon": 80.1626,
+        "features": {
+          "load_pct": 79.7,
+          "voltage_pu": 0.985,
+          "temperature_c": 65.4,
+          "age_years": 15,
+          "capacity_mva": 315
+        }
+      },
+      {
+        "id": "CHE-TRAN-02",
+        "city": "Chennai",
+        "type": "transformer",
+        "lat": 13.0413,
+        "lon": 80.4199,
+        "features": {
+          "load_pct": 43.3,
+          "voltage_pu": 0.979,
+          "temperature_c": 65.8,
+          "age_years": 29,
+          "capacity_mva": 40
+        }
+      },
+      {
+        "id": "CHE-FEED-03",
+        "city": "Chennai",
+        "type": "feeder",
+        "lat": 12.9786,
+        "lon": 80.1687,
+        "features": {
+          "load_pct": 75.8,
+          "voltage_pu": 0.992,
+          "temperature_c": 47.2,
+          "age_years": 21,
+          "capacity_mva": 500
+        }
+      },
+      {
+        "id": "CHE-GENE-04",
+        "city": "Chennai",
+        "type": "generator",
+        "lat": 13.0914,
+        "lon": 80.412,
+        "features": {
+          "load_pct": 86.6,
+          "voltage_pu": 0.921,
+          "temperature_c": 64,
+          "age_years": 23,
+          "capacity_mva": 160
+        }
+      },
+      {
+        "id": "KOL-SUBS-01",
+        "city": "Kolkata",
+        "type": "substation",
+        "lat": 22.6532,
+        "lon": 88.316,
+        "features": {
+          "load_pct": 52.6,
+          "voltage_pu": 0.939,
+          "temperature_c": 28.2,
+          "age_years": 25,
+          "capacity_mva": 160
+        }
+      },
+      {
+        "id": "KOL-TRAN-02",
+        "city": "Kolkata",
+        "type": "transformer",
+        "lat": 22.7142,
+        "lon": 88.4425,
+        "features": {
+          "load_pct": 65.5,
+          "voltage_pu": 0.933,
+          "temperature_c": 59.3,
+          "age_years": 28,
+          "capacity_mva": 100
+        }
+      },
+      {
+        "id": "KOL-FEED-03",
+        "city": "Kolkata",
+        "type": "feeder",
+        "lat": 22.4685,
+        "lon": 88.4427,
+        "features": {
+          "load_pct": 67.4,
+          "voltage_pu": 1.013,
+          "temperature_c": 54.5,
+          "age_years": 2,
+          "capacity_mva": 200
+        }
+      },
+      {
+        "id": "KOL-GENE-04",
+        "city": "Kolkata",
+        "type": "generator",
+        "lat": 22.5692,
+        "lon": 88.2475,
+        "features": {
+          "load_pct": 56.8,
+          "voltage_pu": 1.038,
+          "temperature_c": 68.3,
+          "age_years": 9,
+          "capacity_mva": 25
+        }
+      },
+      {
+        "id": "HYD-SUBS-01",
+        "city": "Hyderabad",
+        "type": "substation",
+        "lat": 17.3073,
+        "lon": 78.5069,
+        "features": {
+          "load_pct": 39.7,
+          "voltage_pu": 1.008,
+          "temperature_c": 68.8,
+          "age_years": 26,
+          "capacity_mva": 63
+        }
+      },
+      {
+        "id": "HYD-TRAN-02",
+        "city": "Hyderabad",
+        "type": "transformer",
+        "lat": 17.2735,
+        "lon": 78.4793,
+        "features": {
+          "load_pct": 68,
+          "voltage_pu": 0.952,
+          "temperature_c": 71.6,
+          "age_years": 15,
+          "capacity_mva": 100
+        }
+      },
+      {
+        "id": "HYD-FEED-03",
+        "city": "Hyderabad",
+        "type": "feeder",
+        "lat": 17.5137,
+        "lon": 78.5633,
+        "features": {
+          "load_pct": 76.4,
+          "voltage_pu": 1.006,
+          "temperature_c": 47.9,
+          "age_years": 23,
+          "capacity_mva": 200
+        }
+      },
+      {
+        "id": "HYD-GENE-04",
+        "city": "Hyderabad",
+        "type": "generator",
+        "lat": 17.3664,
+        "lon": 78.492,
+        "features": {
+          "load_pct": 42.3,
+          "voltage_pu": 0.947,
+          "temperature_c": 44.9,
+          "age_years": 20,
+          "capacity_mva": 100
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "DEL-SUBS-01",
+        "target": "DEL-TRAN-02",
+        "type": "feeder",
+        "capacity_mva": 25
+      },
+      {
+        "source": "DEL-TRAN-02",
+        "target": "DEL-FEED-03",
+        "type": "feeder",
+        "capacity_mva": 10
+      },
+      {
+        "source": "DEL-FEED-03",
+        "target": "DEL-GENE-04",
+        "type": "feeder",
+        "capacity_mva": 10
+      },
+      {
+        "source": "MUM-SUBS-01",
+        "target": "MUM-TRAN-02",
+        "type": "feeder",
+        "capacity_mva": 10
+      },
+      {
+        "source": "MUM-TRAN-02",
+        "target": "MUM-FEED-03",
+        "type": "feeder",
+        "capacity_mva": 25
+      },
+      {
+        "source": "MUM-FEED-03",
+        "target": "MUM-GENE-04",
+        "type": "feeder",
+        "capacity_mva": 10
+      },
+      {
+        "source": "BEN-SUBS-01",
+        "target": "BEN-TRAN-02",
+        "type": "feeder",
+        "capacity_mva": 10
+      },
+      {
+        "source": "BEN-TRAN-02",
+        "target": "BEN-FEED-03",
+        "type": "feeder",
+        "capacity_mva": 40
+      },
+      {
+        "source": "BEN-FEED-03",
+        "target": "BEN-GENE-04",
+        "type": "feeder",
+        "capacity_mva": 10
+      },
+      {
+        "source": "CHE-SUBS-01",
+        "target": "CHE-TRAN-02",
+        "type": "feeder",
+        "capacity_mva": 25
+      },
+      {
+        "source": "CHE-TRAN-02",
+        "target": "CHE-FEED-03",
+        "type": "feeder",
+        "capacity_mva": 40
+      },
+      {
+        "source": "CHE-FEED-03",
+        "target": "CHE-GENE-04",
+        "type": "feeder",
+        "capacity_mva": 63
+      },
+      {
+        "source": "KOL-SUBS-01",
+        "target": "KOL-TRAN-02",
+        "type": "feeder",
+        "capacity_mva": 25
+      },
+      {
+        "source": "KOL-TRAN-02",
+        "target": "KOL-FEED-03",
+        "type": "feeder",
+        "capacity_mva": 25
+      },
+      {
+        "source": "KOL-FEED-03",
+        "target": "KOL-GENE-04",
+        "type": "feeder",
+        "capacity_mva": 63
+      },
+      {
+        "source": "HYD-SUBS-01",
+        "target": "HYD-TRAN-02",
+        "type": "feeder",
+        "capacity_mva": 25
+      },
+      {
+        "source": "HYD-TRAN-02",
+        "target": "HYD-FEED-03",
+        "type": "feeder",
+        "capacity_mva": 63
+      },
+      {
+        "source": "HYD-FEED-03",
+        "target": "HYD-GENE-04",
+        "type": "feeder",
+        "capacity_mva": 63
+      },
+      {
+        "source": "DEL-SUBS-01",
+        "target": "MUM-SUBS-01",
+        "type": "transmission_backbone",
+        "capacity_mva": 315
+      },
+      {
+        "source": "MUM-SUBS-01",
+        "target": "BEN-SUBS-01",
+        "type": "transmission_backbone",
+        "capacity_mva": 315
+      },
+      {
+        "source": "BEN-SUBS-01",
+        "target": "CHE-SUBS-01",
+        "type": "transmission_backbone",
+        "capacity_mva": 315
+      },
+      {
+        "source": "CHE-SUBS-01",
+        "target": "KOL-SUBS-01",
+        "type": "transmission_backbone",
+        "capacity_mva": 500
+      },
+      {
+        "source": "KOL-SUBS-01",
+        "target": "HYD-SUBS-01",
+        "type": "transmission_backbone",
+        "capacity_mva": 500
+      }
+    ]
+  }
+}

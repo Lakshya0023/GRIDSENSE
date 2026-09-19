@@ -1,0 +1,22 @@
+{
+  "G1": {
+    "load_pct": 81.1,
+    "voltage_pu": 0.901,
+    "temperature_c": 140.0
+  },
+  "S6": {
+    "load_pct": 64.0,
+    "voltage_pu": 0.8,
+    "temperature_c": 65.0
+  },
+  "L2": {
+    "load_pct": 86.7,
+    "voltage_pu": 0.968,
+    "temperature_c": 45.3
+  },
+  "S10": {
+    "load_pct": 57.0,
+    "voltage_pu": 0.86,
+    "temperature_c": 67.2
+  }
+}

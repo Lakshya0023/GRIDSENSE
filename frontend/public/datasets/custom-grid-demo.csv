@@ -1,0 +1,13 @@
+id,type,region,state,lat,lon,load_pct,voltage_pu,temperature_c,capacity_mva
+DEL-SUB-01,substation,NR,Delhi,28.6139,77.2090,68.4,0.982,54.0,320
+DEL-TX-01,transformer,NR,Delhi,28.6240,77.2150,91.8,0.948,79.0,160
+DEL-TX-02,transformer,NR,Delhi,28.6030,77.1940,74.2,0.971,63.0,160
+GUR-FDR-01,feeder,NR,Haryana,28.4595,77.0266,83.5,0.956,70.0,90
+JAI-SUB-01,substation,NR,Rajasthan,26.9124,75.7873,57.1,0.993,46.0,250
+MUM-SUB-01,substation,WR,Maharashtra,19.0760,72.8777,72.6,0.978,58.0,400
+MUM-TX-01,transformer,WR,Maharashtra,19.0890,72.8690,96.4,0.934,86.0,200
+PUN-GEN-01,generator,WR,Maharashtra,18.5204,73.8567,61.8,1.012,49.0,300
+CHE-SUB-01,substation,SR,Tamil Nadu,13.0827,80.2707,65.9,0.986,52.0,280
+CHE-FDR-01,feeder,SR,Tamil Nadu,13.0610,80.2550,88.7,0.951,76.0,100
+KOL-SUB-01,substation,ER,West Bengal,22.5726,88.3639,70.3,0.975,61.0,300
+GUW-SUB-01,substation,NER,Assam,26.1445,91.7362,49.6,1.004,41.0,180

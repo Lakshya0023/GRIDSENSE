@@ -1,0 +1,11 @@
+substation_name,city,state,voltage_level_kv,transformer_config,total_transformer_capacity_mva,notes,source
+Bamnauli,Delhi,Delhi,400/220,not specified in source,not specified,One of DTL's four 400kV substations as of Dec-2014,Delhi Transco Limited press release (26-12-2014)
+Bawana,Delhi,Delhi,400/220,not specified in source,not specified,One of DTL's four 400kV substations as of Dec-2014,Delhi Transco Limited press release (26-12-2014)
+Mundka,Delhi,Delhi,400/220,not specified in source,not specified,One of DTL's four 400kV substations as of Dec-2014,Delhi Transco Limited press release (26-12-2014)
+Harsh Vihar,"Delhi (East of Loni; North-East district)",Delhi,400/220/66,"GIS substation, imported switchgear from Korea",945 MVA at 220kV + 480 MVA at 66kV,First 400kV GIS substation built by DTL; commissioned 2014; cost ~INR 200 crore,Delhi Transco Limited press release (26-12-2014)
+Patparganj,Delhi,Delhi,220/66 and 220/33,"220/66kV 100MVA TX-1; 220/66kV 100MVA TX-2; 220/33kV 100MVA TX-1; 220/33kV 100MVA TX-3; 220/33kV 100MVA TX-4",500,~425 MW at 0.85 power factor per DTL planning doc,Delhi Transco Limited 13th Transmission Business Plan (2017-18 to 2021-22)
+Peeragarhi,Delhi,Delhi,220/33,"220/33kV 100MVA TX-1; TX-2; TX-3",300,~255 MW at 0.85 power factor,Delhi Transco Limited 13th Transmission Business Plan (2017-18 to 2021-22)
+"Pragati (IP Extension)",Delhi,Delhi,220/66,220/66kV 160MVA TX + co-located 154MW gas turbine generation,320,Combined transmission + embedded generation site,Delhi Transco Limited 13th Transmission Business Plan (2017-18 to 2021-22)
+Preet Vihar,Delhi,Delhi,220/33,220/33kV 100MVA TX-1 (partial listing),100,Only first transformer row was recoverable from source excerpt; substation likely has more units not captured here,Delhi Transco Limited 13th Transmission Business Plan (2017-18 to 2021-22)
+Tughlakabad,"Delhi (South Delhi)",Delhi,400,not specified in source,not specified,Commissioned Nov-2018 after delay,Global Transmission Research news brief (13-11-2018)
+33 kV Substation Perunad,Perunad,Kerala,33/11,not specified in source,not specified,KSEB 33kV distribution substation,Kerala State Electricity Board Wikipedia / KSEB

@@ -1,0 +1,31 @@
+<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>GridSense mark</title>
+  <desc>Rounded square mark: a network of grid nodes converging into a lightning bolt, on a cyan gradient field.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="240" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4FE3F7"/>
+      <stop offset="1" stop-color="#0E7490"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="90" y1="50" x2="150" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#E4FBFF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="240" height="240" rx="52" fill="url(#bg)"/>
+
+  <line x1="72" y1="72" x2="120" y2="120" stroke="#ffffff" stroke-opacity="0.55" stroke-width="3"/>
+  <line x1="168" y1="72" x2="120" y2="120" stroke="#ffffff" stroke-opacity="0.55" stroke-width="3"/>
+  <line x1="60" y1="150" x2="120" y2="120" stroke="#ffffff" stroke-opacity="0.4" stroke-width="3"/>
+  <line x1="180" y1="150" x2="120" y2="120" stroke="#ffffff" stroke-opacity="0.4" stroke-width="3"/>
+
+  <circle cx="72" cy="72" r="7" fill="#ffffff" fill-opacity="0.85"/>
+  <circle cx="168" cy="72" r="7" fill="#ffffff" fill-opacity="0.85"/>
+  <circle cx="60" cy="150" r="6" fill="#ffffff" fill-opacity="0.6"/>
+  <circle cx="180" cy="150" r="6" fill="#ffffff" fill-opacity="0.6"/>
+
+  <path d="M132 48 L94 128 L118 128 L104 192 L158 108 L130 108 Z" fill="url(#bolt)" stroke="#0A3F4C" stroke-width="2" stroke-linejoin="round"/>
+
+  <circle cx="120" cy="120" r="9" fill="#ffffff"/>
+  <circle cx="120" cy="120" r="9" fill="none" stroke="#0E7490" stroke-width="2"/>
+</svg>
