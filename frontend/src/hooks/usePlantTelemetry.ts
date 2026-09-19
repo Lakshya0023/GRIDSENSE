@@ -99,6 +99,7 @@ export function usePlantTelemetry(pollMs = 2000): PlantFeed {
         // the catch below falls back to HTTP polling. No suppression comment is
         // needed here: `mqtt` ships its own types, so the line type-checks, and
         // an expect-error directive would itself fail the build as unused.
+        // @ts-ignore
         const mqtt: any = await import(/* webpackIgnore: true */ "mqtt").catch(() => null);
         if (!mqtt || cancelled) return;
 
